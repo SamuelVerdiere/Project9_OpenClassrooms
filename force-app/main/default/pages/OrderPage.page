@@ -1,0 +1,7 @@
+<apex:page standardController="Account" extensions="OrderPageController">
+    <div>
+        <h1>
+            Sum of my team orders : <apex:outputText value="{!SumOfOrders}" />
+        </h1>
+    </div>
+</apex:page>

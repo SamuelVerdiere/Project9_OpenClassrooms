@@ -1,8 +1,9 @@
 trigger OrderTrigger on Order (before update, after update) {
+   OrderTriggerRender MyOrder = new OrderTriggerRender();
     if(Trigger.isBefore) {
-        OrderTriggerRender.OrderTriggerBefore(Trigger.new);
+        MyOrder.CalculateNetAmountOrder(Trigger.new);
     }
     if(Trigger.isAfter) {
-        OrderTriggerRender.OrderTriggerAfter(Trigger.new);
+        MyOrder.CalculateTurnoverAccounts(Trigger.new);
     }
 }

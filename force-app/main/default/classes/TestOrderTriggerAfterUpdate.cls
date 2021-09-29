@@ -1,6 +1,6 @@
 @isTest
-public with sharing class TestOrderTriggerAfterUpdate {
-    @isTest public TestOrderTriggerAfterUpdate() {
+private class TestOrderTriggerAfterUpdate {
+    @isTest private static void TestOrderTriggerAfterUpdate() {
         Account testAccount = new Account(Name = 'Test Account 1');
         insert testAccount;
 
@@ -19,10 +19,10 @@ public with sharing class TestOrderTriggerAfterUpdate {
         Order testOrder = new Order(AccountId = testAccount.Id);
         insert testOrder;
 
-        OrderItem testOrderItem = new OrderItemItem (OrderId = testOrder.Id, PricebookEntryId = testPriceBook.Id, Quantity=10, UnitPrice = 150);
+        OrderItem testOrderItem = new OrderItem (OrderId = testOrder.Id, PricebookEntryId = testPriceBook.Id, Quantity=10, UnitPrice = 150);
         insert testOrderItem;
-        OrderItem testOrderItem = new OrderItemItem (OrderId = testOrder.Id, PricebookEntryId = testPriceBook.Id, Quantity=20, UnitPrice = 1000);
-        insert testOrderItem;
+        OrderItem testOrderItem2 = new OrderItem (OrderId = testOrder.Id, PricebookEntryId = testPriceBook.Id, Quantity=20, UnitPrice = 1000);
+        insert testOrderItem2;
 
         //ce test n'a pas d'assert ?
     }

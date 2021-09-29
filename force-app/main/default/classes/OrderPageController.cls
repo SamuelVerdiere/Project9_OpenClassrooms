@@ -1,9 +1,10 @@
 public with sharing class OrderPageController {
-        public decimal SumOfOrders{
-            get{
-                AggregateResult groupedResults = [SELECT SUM(TotalAmount) total FROM Order];
-                return (decimal)groupedResults.get('total');
-            }
-            set;
-        }
-}
+	//this class gets SumOfOrders value for the visualforce page
+	public decimal SumOfOrders {
+		get {
+			//refine the SOQL query to only get "Total Amount" from Order with "ordered" status
+			AggregateResult groupedResults = [SELECT SUM(TotalAmount) total FROM Order WHERE Status = 'Activated'];
+			return (decimal) groupedResults.get('total');
+		}
+		set;
+}}
