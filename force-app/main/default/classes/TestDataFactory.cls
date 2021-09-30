@@ -1,7 +1,6 @@
 
 @isTest
 public class TestDataFactory {
-
     @isTest
     static void TestCreatePriceBookEntry() {
         /* this test method creates a product, 
@@ -38,7 +37,6 @@ public class TestDataFactory {
 			accts.add(a);
 		}
 		insert accts;
-
 		List<Order> ords = new List<Order>();
 		for (Integer j = 0; j < numAccts; j++) {
 			Account acct = accts[j];
@@ -53,7 +51,6 @@ public class TestDataFactory {
 					));}}
 		insert ords;
 }
-
     @isTest
     static void TestCreateOrderItem() {
 
