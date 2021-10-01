@@ -21,4 +21,5 @@ public with sharing class TestUserFactory {
                         LanguageLocaleKey = 'fr_FR'
                         );
         insert testUser;
+        return testUser;
 }}
