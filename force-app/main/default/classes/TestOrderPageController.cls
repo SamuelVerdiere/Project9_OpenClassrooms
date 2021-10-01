@@ -26,11 +26,13 @@ public class testOrderPageController {
     @isTest
     static void testNegativePermission() {
         //GIVEN : create user & data
+        //PriceBook entry requests price of product as parameter
+        //Account with Order equests number of account + order items + shipment cost
+        //and Order Item requests number of account + order items
         TestUserFactory.TestCreateStandardUser();
-        TestUserFactory.TestCreateStandardUser();
-        TestDataFactory.TestCreatePriceBookEntry();
-        TestDataFactory.TestCreateAccountWithOrder(2, 2);
-        TestDataFactory.TestCreateOrderItem(2,2);
+        TestDataFactory.TestCreatePriceBookEntry(1000);
+        TestDataFactory.TestCreateAccountWithOrder(2, 2, 100);
+        TestDataFactory.TestCreateOrderItem(2,2,5);
         TestDataFactory.updateOrderStatus();
         List<Contacts> canSeeContacts;
         //WHEN : perform test
@@ -40,6 +42,6 @@ public class testOrderPageController {
         }
         test.stopTest();
         //THEN : assert
-        system.assertEquals(1, canSeeContacts.size(), );
+        system.assertEquals(canSeeContacts.size() == 1, 'this element cannot let the user see contacts');
     }
 }

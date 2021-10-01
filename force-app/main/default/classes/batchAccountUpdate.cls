@@ -12,7 +12,7 @@ global class batchAccountUpdate implements Database.Batchable<sObject> {
         }
         global void execute(Database.BatchableContext info, List<Account> scope){      
             list<Order> listOrders =  [SELECT Id, TotalAmount, AccountId FROM Order];
-            //place dans une liste d'Order l'Id, le montant total et l'ID du compte relatif
+            //place dans une liste d'Order l'Id, le montant total de l'ordre et l'ID du compte relatif
              for(integer i=0; i < scope.size(); i++){ // pour  chaque compte de la liste
                  Account myAccount = scope[i];       // qui est ici représenté par myAccount
                  myAccount.Chiffre_d_affaire__c = 0;     // on place le CA à zéro

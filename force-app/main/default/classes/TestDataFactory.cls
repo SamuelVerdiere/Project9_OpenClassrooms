@@ -66,8 +66,11 @@ public class TestDataFactory {
         for (Integer oi = 0; oi < numberOfTestOrderPerAccount; oi++) {
         //variable testOrds corresponds to the testOrders list indexed with this for loop
             Order testOrds = testOrders[oi];
-            //
+            //this second for loop increments: starting with number of tests by increments;
+            //as long as the index doesn't reach the number of accounts times the orders per account,
+            //then increment.
             for(Integer napo = numberOfTestAccounts * oi; napo < numberOfTestAccounts * numberOfTestOrderPerAccount * (oi + 1); napo++ ) {
+                //in the orderItem list, add an order item, which price and quantity are determined by method parameter
                 testOrderItem.add(new OrderItem(
                     OrderID =testOrds.Id,
                     Product2Id = testProduct.Id,
@@ -75,6 +78,7 @@ public class TestDataFactory {
                     UnitPrice = testPriceBookEntry.UnitPrice,
                     Quantity = ItemQuantity
                 ));}}
+                //insert the list of order items
             insert testOrderItem;
         }  
     @isTest
@@ -96,7 +100,7 @@ public class TestDataFactory {
                 listOfOrdersToUpdate.add(ord);
             }
             update listOfOrdersToUpdate;
-
+            //this context will also delete order items for testing purposes
             delete testOrderItem;
         }
 }

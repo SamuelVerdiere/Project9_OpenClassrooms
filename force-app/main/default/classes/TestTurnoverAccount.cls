@@ -1,7 +1,6 @@
 @isTest
 public with sharing class TestTurnoverAccount {
-    @isTest
-    static void TestUpdatingTurnoverAfterInsert() {
+    static testMethod TestUpdatingTurnoverAfterInsert() {
         //PriceBook entry requests price of product as parameter
         //Account with Order equests number of account + order items + shipment cost
         //and Order Item requests number of account + order items + number of items created
@@ -15,13 +14,12 @@ public with sharing class TestTurnoverAccount {
         Test.startTest();
         SumOfResults = [SELECT SUM(Chiffre_d_affaire__c) totality FROM Account WHERE Id IN (SELECT AccountId FROM Order)];
         Test.stopTest();
-        //THEN : assert result
+        //THEN : assert resu
         for(AggregateResult sor : SumOfResults) {
             System.assertEquals(600000, sor.get('totality'));
         }
     }
-    @isTest
-    static void TestUpdatingTurnoverAfterDeletion() {
+    static testMethod TestUpdatingTurnoverAfterDeletion() {
         //PriceBook entry requests price of product as parameter
         //Account with Order equests number of account + order items + shipment cost
         //and Order Item requests number of account + order items + number of items created
@@ -40,8 +38,7 @@ public with sharing class TestTurnoverAccount {
             System.assertEquals(0, sor.get('totality'));
         }
     }
-    @isTest
-    static void TestAccountCreation() {
+    static testMethod TestAccountCreation() {
         //PriceBook entry requests price of product as parameter
         //Account with Order equests number of account + order items + shipment cost
         //and Order Item requests number of account + order items + number of items created
@@ -60,8 +57,7 @@ public with sharing class TestTurnoverAccount {
             System.assertEquals(162, numberOfAccounts.size());
         }
     }
-    @isTest
-    static void TestOrderCreation() {
+    static testMethod TestOrderCreation() {
         //PriceBook entry requests price of product as parameter
         //Account with Order equests number of account + order items + shipment cost
         //and Order Item requests number of account + order items + number of items created
@@ -80,8 +76,7 @@ public with sharing class TestTurnoverAccount {
             System.assertEquals(500, numberOfOrders.size());
         }
     }
-    @isTest
-    static void TestOrderItemCreation() {
+    static testMethod TestOrderItemCreation() {
         //PriceBook entry requests price of product as parameter
         //Account with Order equests number of account + order items + shipment cost
         //and Order Item requests number of account + order items + number of items created
