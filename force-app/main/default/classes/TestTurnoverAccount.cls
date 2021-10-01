@@ -1,14 +1,14 @@
 @isTest
 public with sharing class TestTurnoverAccount {
-    static testMethod TestUpdatingTurnoverAfterInsert() {
-        //PriceBook entry requests price of product as parameter
-        //Account with Order equests number of account + order items + shipment cost
-        //and Order Item requests number of account + order items + number of items created
-        //GIVEN : values created by these methods
-        TestDataFactory.TestCreatePriceBookEntry(1000);
-        TestDataFactory.TestCreateAccountWithOrder(200,50, 100);
-        TestDataFactory.TestCreateOrderItem(200,50, 5);
-        TestDataFactory.updateOrderStatus();
+    public static void  TestUpdatingTurnoverAfterInsert() {
+        /* the test method from the factory takes as parameters :
+        - The Number of Accounts needed
+        - The Number of Orders per Accound needed
+        - The quantity of Items per order
+        - The Unit Price of each item
+        - The Shipment Cost for each item */
+        //GIVEN : create data
+        TestDataFactory.TestCreateAndUpdateAccountProductsOrdersItems(1, 2, 2, 10, 1);
         List<AggregateResult> SumOfResults;
         //WHEN : execute test
         Test.startTest();
@@ -16,18 +16,13 @@ public with sharing class TestTurnoverAccount {
         Test.stopTest();
         //THEN : assert resu
         for(AggregateResult sor : SumOfResults) {
-            System.assertEquals(600000, sor.get('totality'));
+            //1 account * 2 orders * 2 items * 10€ - 1*2 shipment cost = 38
+            System.assertEquals(38, sor.get('totality'));
         }
     }
-    static testMethod TestUpdatingTurnoverAfterDeletion() {
-        //PriceBook entry requests price of product as parameter
-        //Account with Order equests number of account + order items + shipment cost
-        //and Order Item requests number of account + order items + number of items created
-        //GIVEN : values created by these methods
-        TestDataFactory.TestCreatePriceBookEntry(1000);
-        TestDataFactory.TestCreateAccountWithOrder(200,50, 100);
-        TestDataFactory.TestCreateOrderItem(200,50, 5);
-        TestDataFactory.updateOrderStatus();
+    public static void  testUpdatingTurnoverAfterDeletion() {
+        //GIVEN : create data
+        TestDataFactory.testupdateStatusAndDeleteOrderItem(2,2,4,100,10);
         List<AggregateResult> SumOfResults;
         //WHEN : execute test
         Test.startTest();
@@ -38,60 +33,42 @@ public with sharing class TestTurnoverAccount {
             System.assertEquals(0, sor.get('totality'));
         }
     }
-    static testMethod TestAccountCreation() {
-        //PriceBook entry requests price of product as parameter
-        //Account with Order equests number of account + order items + shipment cost
-        //and Order Item requests number of account + order items + number of items created
-        //GIVEN : values created by these methods
-        TestDataFactory.TestCreatePriceBookEntry(1000);
-        TestDataFactory.TestCreateAccountWithOrder(162,50, 100);
-        TestDataFactory.TestCreateOrderItem(162,50, 5);
-        TestDataFactory.updateOrderStatus();
-        List<AggregateResult> SumOfResults;
+    public static void  TestAccountCreation() {
+        //GIVEN : create data        
+        TestDataFactory.TestCreateAndUpdateAccountProductsOrdersItems(162, 2, 2, 10, 1);
+        List<Account> numberOfAccounts;
         //WHEN : execute test
         Test.startTest();
         numberOfAccounts = [SELECT ID FROM Account WHERE Name LIKE '%Testing%'];
         Test.stopTest();
         //THEN : assert result
-        for(AggregateResult noa : numberOfAccounts) {
+        for(Account noa : numberOfAccounts) {
             System.assertEquals(162, numberOfAccounts.size());
         }
     }
-    static testMethod TestOrderCreation() {
-        //PriceBook entry requests price of product as parameter
-        //Account with Order equests number of account + order items + shipment cost
-        //and Order Item requests number of account + order items + number of items created
-        //GIVEN : values created by these methods
-        TestDataFactory.TestCreatePriceBookEntry(1000);
-        TestDataFactory.TestCreateAccountWithOrder(10,10, 100);
-        TestDataFactory.TestCreateOrderItem(10,10,5);
-        TestDataFactory.updateOrderStatus();
-        List<AggregateResult> SumOfResults;
+    public static void  TestOrderCreation() {
+        //GIVEN : create data
+        TestDataFactory.TestCreateAndUpdateAccountProductsOrdersItems(10,50,2,10,1);
+        List<Order> numberOfOrders;
         //WHEN : execute test
         Test.startTest();
         numberOfOrders= [SELECT ID FROM Order];
         Test.stopTest();
         //THEN : assert result
-        for(AggregateResult noo : numberOfOrders) {
+        for(Order noo : numberOfOrders) {
             System.assertEquals(500, numberOfOrders.size());
         }
     }
-    static testMethod TestOrderItemCreation() {
-        //PriceBook entry requests price of product as parameter
-        //Account with Order equests number of account + order items + shipment cost
-        //and Order Item requests number of account + order items + number of items created
-        //GIVEN : values created by these methods
-        TestDataFactory.TestCreatePriceBookEntry(1000);
-        TestDataFactory.TestCreateAccountWithOrder(10,5, 100);
-        TestDataFactory.TestCreateOrderItem(10,5,5);
-        TestDataFactory.updateOrderStatus();
-        List<AggregateResult> SumOfResults;
+    public static void  TestOrderItemCreation() {
+        //GIVEN : create data
+        TestDataFactory.TestCreateAndUpdateAccountProductsOrdersItems(25,1,10,10,1);
+        List<OrderItem> numberOfOrderItems;
         //WHEN : execute test
         Test.startTest();
         numberOfOrderItems= [SELECT ID FROM OrderItem];
         Test.stopTest();
         //THEN : assert result
-        for(AggregateResult noi : numberOfOrderItems) {
+        for(OrderItem noi : numberOfOrderItems) {
             System.assertEquals(250, numberOfOrderItems.size());
         }
     }
