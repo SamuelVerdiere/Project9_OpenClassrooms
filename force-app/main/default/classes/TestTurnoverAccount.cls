@@ -1,6 +1,6 @@
 @isTest
 public with sharing class TestTurnoverAccount {
-    public static void  TestUpdatingTurnoverAfterInsert() {
+    public static void TestUpdatingTurnoverAfterInsert() {
         /* the test method from the factory takes as parameters :
         - The Number of Accounts needed
         - The Number of Orders per Accound needed
@@ -16,8 +16,8 @@ public with sharing class TestTurnoverAccount {
         Test.stopTest();
         //THEN : assert resu
         for(AggregateResult sor : SumOfResults) {
-            //1 account * 2 orders * 2 items * 10€ - 1*2 shipment cost = 38
-            System.assertEquals(38, sor.get('totality'));
+            //1 account * 2 orders * 2 items * 10€ - 1*4 shipment cost = 36
+            System.assertEquals(36, sor.get('totality'));
         }
     }
     public static void  testUpdatingTurnoverAfterDeletion() {

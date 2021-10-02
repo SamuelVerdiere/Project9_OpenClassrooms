@@ -1,16 +1,26 @@
 @isTest
-public class testOrderPageController {
-    @isTest
-    static void testPositivePermission() {
-        //GIVEN : create user & data
-        //PriceBook entry requests price of product as parameter
-        //Account with Order equests number of account + order items + shipment cost
-        //and Order Item requests number of account + order items
-        TestUserFactory.TestCreateStandardUser();
-        TestDataFactory.TestCreatePriceBookEntry(1000);
-        TestDataFactory.TestCreateAccountWithOrder(2, 2, 100);
-        TestDataFactory.TestCreateOrderItem(2,2);
-        TestDataFactory.updateOrderStatus();
+public with sharing class TestOrderPageController {
+    public static void testPositivePermission() {
+        /* the test method from the factory takes as parameters :
+        - The Number of Accounts needed
+        - The Number of Orders per Accound needed
+        - The quantity of Items per order
+        - The Unit Price of each item
+        - The Shipment Cost for each item */
+        Profile IdProfile = [SELECT Id FROM Profile WHERE Name = 'Standard User' LIMIT 1];        
+        User testUser = new User(FirstName='Jordan',
+                       LastName = 'HAL',
+                       Alias = 'hjord',
+                       Email = 'jordan.hal@example.com',
+                       Username = 'jhal@example.com',
+                       ProfileId = IdProfile.id,
+                       EmailEncodingKey = 'UTF-8',
+                       TimeZoneSidKey = 'GMT+2',
+                       LocaleSidKey = 'fr_FR',
+                       LanguageLocaleKey = 'fr_FR'
+                       );
+        insert testUser;
+        TestDataFactory.TestCreateAccountsOrdersItemsForPageController(1, 2, 2, 10, 1);
         List<AggregateResult> SumOfResults;
         //WHEN : perform test
         test.startTest();
@@ -19,29 +29,34 @@ public class testOrderPageController {
         }
         test.stopTest();
         //THEN : assert
-        Integer expect = '';
         for (AggregateResult sor : SumOfResults) {
-            System.assertEquals((expect), sor.get('totality'));
+            System.assertEquals(36, sor.get('totality'));
         }}
-    @isTest
-    static void testNegativePermission() {
-        //GIVEN : create user & data
-        //PriceBook entry requests price of product as parameter
-        //Account with Order equests number of account + order items + shipment cost
-        //and Order Item requests number of account + order items
-        TestUserFactory.TestCreateStandardUser();
-        TestDataFactory.TestCreatePriceBookEntry(1000);
-        TestDataFactory.TestCreateAccountWithOrder(2, 2, 100);
-        TestDataFactory.TestCreateOrderItem(2,2,5);
-        TestDataFactory.updateOrderStatus();
-        List<Contacts> canSeeContacts;
+
+    public static void testNegativePermission() {
+        //GIVEN : create data
+        Profile IdProfile = [SELECT Id FROM Profile WHERE Name = 'Standard User' LIMIT 1];        
+        User testUser = new User(FirstName='Jordan',
+                       LastName = 'HAL',
+                       Alias = 'hjord',
+                       Email = 'jordan.hal@example.com',
+                       Username = 'jhal@example.com',
+                       ProfileId = IdProfile.id,
+                       EmailEncodingKey = 'UTF-8',
+                       TimeZoneSidKey = 'GMT+2',
+                       LocaleSidKey = 'fr_FR',
+                       LanguageLocaleKey = 'fr_FR'
+                       );
+        insert testUser;
+        TestDataFactory.TestCreateAccountsOrdersItemsForPageController(1, 2, 2, 10, 1);
+        List<Contact> canSeeContacts;
         //WHEN : perform test
         test.startTest();
         System.runAs(testUser) {
-            canSeeContacts = [SELECT Id FROM Contacts];
+            canSeeContacts = [SELECT Id FROM Contact];
         }
         test.stopTest();
         //THEN : assert
-        system.assertEquals(canSeeContacts.size() == 1, 'this element cannot let the user see contacts');
+        system.assert(canSeeContacts.size() != 0, 'this element cannot let the user see contacts');
     }
 }

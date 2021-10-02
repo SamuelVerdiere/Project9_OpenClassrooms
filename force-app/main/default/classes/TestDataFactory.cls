@@ -1,7 +1,7 @@
 
 @isTest
 public class TestDataFactory {
-    public static void TestCreateAndUpdateAccountProductsOrdersItems(Integer numberOfTestAccounts, Integer numberOfTestOrderPerAccount, Integer ItemQuantity, Decimal PriceUnit, Decimal CostShipment) {
+    public static void TestCreateAndUpdateAccountProductsOrdersItems(Integer numberOfTestAccounts, Integer numberOfTestOrderPerAccount, Integer ItemQuantity, Integer PriceUnit, Integer CostShipment) {
         /* this test method creates a user, product, a pricebook entry standard and custom, orders and orders items*/
         //create User
         Profile IdProfile = [SELECT Id FROM Profile WHERE Name = 'Standard User' LIMIT 1];        
@@ -98,7 +98,7 @@ public class TestDataFactory {
 		update listOfOrdersToUpdate;
     }
 
-     public static void testupdateStatusAndDeleteOrderItem(Integer numberOfTestAccounts, Integer numberOfTestOrderPerAccount, Integer ItemQuantity, Decimal PriceUnit, Decimal CostShipment) {
+     public static void testupdateStatusAndDeleteOrderItem(Integer numberOfTestAccounts, Integer numberOfTestOrderPerAccount, Integer ItemQuantity, Integer PriceUnit, Integer CostShipment) {
         /* this test method creates a user, product, a pricebook entry standard and custom, orders and orders items*/
         //create User
         Profile IdProfile = [SELECT Id FROM Profile WHERE Name = 'Standard User' LIMIT 1];        
@@ -195,4 +195,100 @@ public class TestDataFactory {
 		update listOfOrdersToUpdate;
         delete testOrderItem;
  }
+
+ public static void TestCreateAccountsOrdersItemsForPageController(Integer numberOfTestAccounts, Integer numberOfTestOrderPerAccount, Integer ItemQuantity, Integer PriceUnit, Integer CostShipment) {
+    /* this test method creates a product, a pricebook entry standard and custom, orders and orders items*/
+    Profile IdProfile = [SELECT Id FROM Profile WHERE Name = 'Standard User' LIMIT 1];  
+    User testUser = new User(FirstName='Jordan',
+    LastName = 'HAL',
+    Alias = 'hjord',
+    Email = 'jordan.hal@example.com',
+    Username = 'jhal@example.com',
+    ProfileId = IdProfile.id,
+    EmailEncodingKey = 'UTF-8',
+    TimeZoneSidKey = 'GMT+2',
+    LocaleSidKey = 'fr_FR',
+    LanguageLocaleKey = 'fr_FR'
+    );
+    insert testUser;
+    //Create product
+    Product2 testProduct = new Product2(Name = 'SmartPhone Samsung Galaxy S22', ProductCode = 'GS2223', Family = 'SmartPhone', IsActive = true);
+    insert testProduct;
+    //Insert the product in the standard price book (if necessary)
+    PricebookEntry testStandardPBE = new PricebookEntry(Pricebook2Id = Test.getStandardPricebookId(), 
+    Product2Id = testProduct.Id, UnitPrice = PriceUnit, UseStandardPrice = false, IsActive = true);
+    insert testStandardPBE;
+    //create custom price book
+    Pricebook2 testPriceBook = new Pricebook2(Name = 'Price Book Standard', IsActive = true);
+    insert testPriceBook;
+    //get the standard price book ID
+    //Pricebook2 testStandardPriceBook = [SELECT Id FROM Pricebook2 WHERE isStandard = true LIMIT 1];
+    //Insert the product in the custom price book
+    PricebookEntry testPriceBookEntry = new PricebookEntry(Pricebook2Id = testPriceBook.Id, 
+    Product2Id = testProduct.Id, UnitPrice = PriceUnit, UseStandardPrice = false, IsActive = true);
+    insert testPriceBookEntry;
+    /*This test method creates accounts with orders. In the test invocation, we can choose number of accounts
+    created and number of orders per account, by putting numbers in parameters. */
+    //first we get created user id.
+    //Id UserId = testUser.Id;  //TODO : fix !unresolved!
+    //then variables for dates
+    Date myDate = Date.today();
+    Date futureDate = mydate.addDays(8);
+    //Finally create lists for accounts and orders
+    List<Account> testAccounts = new List<Account>();
+    List<Order> testOrders = new List<Order>();
+    //Then create 2 for loops, each increments depending on the number of accounts/orders.
+    for (Integer i = 0; i < numberOfTestAccounts; i++) {
+    //Create new accounts
+    Account accountForTest = new Account(Name = 'Account for Testing' + i, OwnerId = testUser.Id);
+    //place these accounts in the list
+    testAccounts.add(accountForTest);
+    }
+    //create these accounts from the list.
+    insert testAccounts;
+    //this for loop increments depending of number of accounts selected
+    for(Integer a = 0; a < numberOfTestAccounts; a++) {
+    //accounts in the for loop are the ones from previous for loop
+        Account testaccts = testAccounts[a];
+        //this second for loop increments : starting with number of orders by increment;
+        //as long as the index doesn't reach the number of order per acccount, which is at least 1, 
+        //then increment. 
+        for(Integer o = numberOfTestOrderPerAccount * a; o < numberOfTestOrderPerAccount * (a + 1); o++) {
+            //on the test order list, add new orders whose account id is found in the list of accounts; 
+            //the effective date is from the date variable; select a shipment cost and the product ID from the testPriceBookEntry. 
+            //Finally, important the status is set on "draft".
+            testOrders.add(new Order(AccountID = testaccts.id, EffectiveDate = myDate, ShipmentCost__c = CostShipment, Pricebook2Id = testPriceBookEntry.Pricebook2Id, Status = 'Draft'));
+    }
+    //finally the list of orders is created and has a corresponding account, id and status.
+    insert testOrders;
+    }
+    // Create Accounts with an Order
+    //Create a list of Order Items
+    List<OrderItem> testOrderItem = new List<OrderItem>();
+    //starting at 0, as long as the number of order isn't reached, increment
+    for (Integer oi = 0; oi < numberOfTestOrderPerAccount; oi++) {
+    //variable testOrds corresponds to the testOrders list indexed with this for loop
+        Order testOrds = testOrders[oi];
+        //this second for loop increments: starting with number of tests by increments;
+        //as long as the index doesn't reach the number of accounts times the orders per account,
+        //then increment.
+        for(Integer napo = numberOfTestAccounts * oi; napo < numberOfTestAccounts * numberOfTestOrderPerAccount * (oi + 1); napo++ ) {
+            //in the orderItem list, add an order item, which price and quantity are determined by method parameter
+            testOrderItem.add(new OrderItem(
+                OrderID =testOrds.Id,
+                Product2Id = testProduct.Id,
+                PricebookEntryId = testPriceBookEntry.Id,
+                UnitPrice = testPriceBookEntry.UnitPrice,
+                Quantity = ItemQuantity
+            ));}}
+            //insert the list of order items
+        insert testOrderItem;
+    //Update Status on Order to "Ordered"
+    List<Order> listOfOrdersToUpdate = new List<Order>();
+    for (Order ord : testOrders) {
+        ord.Status = 'Ordered';
+        listOfOrdersToUpdate.add(ord);
+    }
+    update listOfOrdersToUpdate;
+}
 }
