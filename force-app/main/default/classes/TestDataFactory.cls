@@ -24,9 +24,10 @@ public class TestDataFactory {
         //then variables for dates
         Date myDate = Date.today();
         Date futureDate = mydate.addDays(8);
-        //Finally create lists for accounts and orders
+        //Finally create lists for accounts, orders and order items
         List<Account> testAccounts = new List<Account>();
         List<Order> testOrderz = new List<Order>();
+        List<OrderItem> testOrderItem = new List<OrderItem>();
         //Then create 2 for loops, each increments depending on the number of accounts/orders.
         for (Integer i = 0; i < numberOfTestAccounts; i++) {
         //Create new accounts
@@ -51,15 +52,10 @@ public class TestDataFactory {
                 Pricebook2Id = testPriceBookEntry.Pricebook2Id, Status = 'Draft'));
         }
         //finally the list of orders is created and has a corresponding account, id and status.
-        try {
+    }
         insert testOrderz;
-        } catch(Exception e) {
-            System.debug('this occured: ' + e.getMessage());
-        }
-        }
+        update testAccounts;
         // Create Accounts with an Order
-        //Create a list of Order Items
-        List<OrderItem> testOrderItem = new List<OrderItem>();
         //starting at 0, as long as the number of order isn't reached, increment
         for (Integer oi = 0; oi < numberOfTestOrderPerAccount; oi++) {
         //variable testOrds corresponds to the testOrders list indexed with this for loop
@@ -80,11 +76,8 @@ public class TestDataFactory {
 			ord.Status = 'Activated';
 			listOfOrdersToUpdate.add(ord);
 		}
-        try {
 		update listOfOrdersToUpdate;
-        } catch (Exception e) {
-            System.debug('it\'s here' + e.getMessage());
-        }
+        update testAccounts;
     }
     public static void testupdateStatusAndDeleteOrderItem(Integer numberOfTestAccounts, Integer numberOfTestOrderPerAccount, 
      Integer ItemQuantity, Integer PriceUnit, Integer CostShipment) {

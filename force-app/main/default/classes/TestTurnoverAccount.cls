@@ -16,9 +16,9 @@ public with sharing class TestTurnoverAccount {
         Test.startTest();
         SumOfResults = [SELECT SUM(Chiffre_d_affaire__c) totality FROM Account WHERE Id IN (SELECT AccountId FROM Order)];
         Test.stopTest();
-        //THEN : assert resu
+        //THEN : assert result
         for(AggregateResult sor : SumOfResults) {
-            //1 account * 1 order * 
+            //1 account * 1 order * 1 order item * 1000$ minus ship cost 100$ = 900
             System.assertEquals(900, sor.get('totality'));
         }
     }
@@ -39,6 +39,7 @@ public with sharing class TestTurnoverAccount {
         Test.stopTest();
         //THEN : assert result
         for(AggregateResult sor : SumOfResults) {
+            //since we delete order items, the turnover should be 0
             System.assertEquals(null, sor.get('totality'));
         }
     }
@@ -59,6 +60,7 @@ public with sharing class TestTurnoverAccount {
         Test.stopTest();
         //THEN : assert result
         for(Account noa : numberOfAccounts) {
+            //simply create 5 accounts
             System.assertEquals(5, numberOfAccounts.size());
         }
     }
@@ -71,7 +73,7 @@ public with sharing class TestTurnoverAccount {
         - The Unit Price of each item
         - The Shipment Cost for each item */
         //GIVEN : create data
-        TestDataFactory.TestCreateAndUpdateAccountProductsOrdersItems(1,50,1,1,1);
+        TestDataFactory.TestCreateAndUpdateAccountProductsOrdersItems(2,10,1,1,1);
         List<Order> numberOfOrders;
         //WHEN : execute test
         Test.startTest();
@@ -79,7 +81,8 @@ public with sharing class TestTurnoverAccount {
         Test.stopTest();
         //THEN : assert result
         for(Order noo : numberOfOrders) {
-            System.assertEquals(50, numberOfOrders.size());
+            //create 2 accounts, each with 10 orders, therefore 20 orders
+            System.assertEquals(20, numberOfOrders.size());
         }
     }
     @isTest
@@ -91,7 +94,7 @@ public with sharing class TestTurnoverAccount {
         - The Unit Price of each item
         - The Shipment Cost for each item */
         //GIVEN : create data
-        TestDataFactory.TestCreateAndUpdateAccountProductsOrdersItems(1,1,20,1,1);
+        TestDataFactory.TestCreateAndUpdateAccountProductsOrdersItems(2,2,20,1,1);
         List<OrderItem> numberOfOrderItems;
         //WHEN : execute test
         Test.startTest();
@@ -99,7 +102,8 @@ public with sharing class TestTurnoverAccount {
         Test.stopTest();
         //THEN : assert result
         for(OrderItem noi : numberOfOrderItems) {
-            System.assertEquals(20, numberOfOrderItems.size());
+            //create 2 accounts, each with 2 orders, each with 20 order items = 2*2*20 = 80
+            System.assertEquals(80, numberOfOrderItems.size());
         }
     }
 }
