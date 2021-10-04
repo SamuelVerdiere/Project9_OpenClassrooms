@@ -1,24 +1,11 @@
 
 @isTest
 public class TestDataFactory {
-    public static void TestCreateAndUpdateAccountProductsOrdersItems(Integer numberOfTestAccounts, Integer numberOfTestOrderPerAccount, Integer ItemQuantity, Integer PriceUnit, Integer CostShipment) {
+    public static void TestCreateAndUpdateAccountProductsOrdersItems(Integer numberOfTestAccounts, Integer numberOfTestOrderPerAccount, 
+    Integer ItemQuantity, Integer PriceUnit, Integer CostShipment) {
         /* this test method creates a user, product, a pricebook entry standard and custom, orders and orders items*/
-        //create User
-        Profile IdProfile = [SELECT Id FROM Profile WHERE Name = 'Standard User' LIMIT 1];        
-        User testUser = new User(FirstName='Jordan',
-                       LastName = 'HAL',
-                       Alias = 'hjord',
-                       Email = 'jordan.hal@example.com',
-                       Username = 'jhal@example.com',
-                       ProfileId = IdProfile.id,
-                       EmailEncodingKey = 'UTF-8',
-                       TimeZoneSidKey = 'GMT+2',
-                       LocaleSidKey = 'fr_FR',
-                       LanguageLocaleKey = 'fr_FR'
-                       );
-       insert testUser;
         //Create product
-        Product2 testProduct = new Product2(Name = 'SmartPhone Samsung Galaxy S22', ProductCode = 'GS2223', Family = 'SmartPhone', IsActive = true);
+        Product2 testProduct = new Product2(Name = 'Samsung Galaxy S22', ProductCode = 'GS2223', Family = 'SmartPhone', IsActive = true);
         insert testProduct;
         //Insert the product in the standard price book (if necessary)
         PricebookEntry testStandardPBE = new PricebookEntry(Pricebook2Id = Test.getStandardPricebookId(), 
@@ -28,25 +15,22 @@ public class TestDataFactory {
         Pricebook2 testPriceBook = new Pricebook2(Name = 'Price Book Standard', IsActive = true);
         insert testPriceBook;
         //get the standard price book ID
-        //Pricebook2 testStandardPriceBook = [SELECT Id FROM Pricebook2 WHERE isStandard = true LIMIT 1];
         //Insert the product in the custom price book
         PricebookEntry testPriceBookEntry = new PricebookEntry(Pricebook2Id = testPriceBook.Id, 
         Product2Id = testProduct.Id, UnitPrice = PriceUnit, UseStandardPrice = false, IsActive = true);
         insert testPriceBookEntry;
         /*This test method creates accounts with orders. In the test invocation, we can choose number of accounts
         created and number of orders per account, by putting numbers in parameters. */
-        //first we get created user id.
-        //Id UserId = testUser.Id;  //TODO : fix !unresolved!
         //then variables for dates
         Date myDate = Date.today();
         Date futureDate = mydate.addDays(8);
         //Finally create lists for accounts and orders
         List<Account> testAccounts = new List<Account>();
-        List<Order> testOrders = new List<Order>();
+        List<Order> testOrderz = new List<Order>();
         //Then create 2 for loops, each increments depending on the number of accounts/orders.
         for (Integer i = 0; i < numberOfTestAccounts; i++) {
         //Create new accounts
-        Account accountForTest = new Account(Name = 'Account for Testing' + i, OwnerId = testUser.Id);
+        Account accountForTest = new Account(Name = 'Account for Testing ' + i);
         //place these accounts in the list
         testAccounts.add(accountForTest);
         }
@@ -63,10 +47,15 @@ public class TestDataFactory {
                 //on the test order list, add new orders whose account id is found in the list of accounts; 
                 //the effective date is from the date variable; select a shipment cost and the product ID from the testPriceBookEntry. 
                 //Finally, important the status is set on "draft".
-                testOrders.add(new Order(AccountID = testaccts.id, EffectiveDate = myDate, ShipmentCost__c = CostShipment, Pricebook2Id = testPriceBookEntry.Pricebook2Id, Status = 'Draft'));
+                testOrderz.add(new Order(AccountID = testaccts.id, EffectiveDate = myDate, ShipmentCost__c = CostShipment, 
+                Pricebook2Id = testPriceBookEntry.Pricebook2Id, Status = 'Draft'));
         }
         //finally the list of orders is created and has a corresponding account, id and status.
-        insert testOrders;
+        try {
+        insert testOrderz;
+        } catch(Exception e) {
+            System.debug('this occured: ' + e.getMessage());
+        }
         }
         // Create Accounts with an Order
         //Create a list of Order Items
@@ -74,48 +63,34 @@ public class TestDataFactory {
         //starting at 0, as long as the number of order isn't reached, increment
         for (Integer oi = 0; oi < numberOfTestOrderPerAccount; oi++) {
         //variable testOrds corresponds to the testOrders list indexed with this for loop
-            Order testOrds = testOrders[oi];
+            Order testOrds = testOrderz[oi];
             //this second for loop increments: starting with number of tests by increments;
             //as long as the index doesn't reach the number of accounts times the orders per account,
             //then increment.
-            for(Integer napo = numberOfTestAccounts * oi; napo < numberOfTestAccounts * numberOfTestOrderPerAccount * (oi + 1); napo++ ) {
+            for(Integer napo = numberOfTestAccounts * ItemQuantity * oi; napo < numberOfTestAccounts * ItemQuantity * (oi + 1); napo++ ) {
                 //in the orderItem list, add an order item, which price and quantity are determined by method parameter
-                testOrderItem.add(new OrderItem(
-                    OrderID =testOrds.Id,
-                    Product2Id = testProduct.Id,
-                    PricebookEntryId = testPriceBookEntry.Id,
-                    UnitPrice = testPriceBookEntry.UnitPrice,
-                    Quantity = ItemQuantity
-                ));}}
+                testOrderItem.add(new OrderItem(OrderID =testOrds.Id, Product2Id = testProduct.Id, PricebookEntryId = testPriceBookEntry.Id,
+                    UnitPrice = testPriceBookEntry.UnitPrice, Quantity = ItemQuantity)
+                );}}
                 //insert the list of order items
-            insert testOrderItem;
+        insert testOrderItem;
 		//Update Status on Order to "Ordered"
 		List<Order> listOfOrdersToUpdate = new List<Order>();
-		for (Order ord : testOrders) {
-			ord.Status = 'Ordered';
+		for (Order ord : testOrderz) {
+			ord.Status = 'Activated';
 			listOfOrdersToUpdate.add(ord);
 		}
+        try {
 		update listOfOrdersToUpdate;
+        } catch (Exception e) {
+            System.debug('it\'s here' + e.getMessage());
+        }
     }
-
-     public static void testupdateStatusAndDeleteOrderItem(Integer numberOfTestAccounts, Integer numberOfTestOrderPerAccount, Integer ItemQuantity, Integer PriceUnit, Integer CostShipment) {
+    public static void testupdateStatusAndDeleteOrderItem(Integer numberOfTestAccounts, Integer numberOfTestOrderPerAccount, 
+     Integer ItemQuantity, Integer PriceUnit, Integer CostShipment) {
         /* this test method creates a user, product, a pricebook entry standard and custom, orders and orders items*/
-        //create User
-        Profile IdProfile = [SELECT Id FROM Profile WHERE Name = 'Standard User' LIMIT 1];        
-        User testUser = new User(FirstName='Jordan',
-                       LastName = 'HAL',
-                       Alias = 'hjord',
-                       Email = 'jordan.hal@example.com',
-                       Username = 'jhal@example.com',
-                       ProfileId = IdProfile.id,
-                       EmailEncodingKey = 'UTF-8',
-                       TimeZoneSidKey = 'GMT+2',
-                       LocaleSidKey = 'fr_FR',
-                       LanguageLocaleKey = 'fr_FR'
-                       );
-       insert testUser;
         //Create product
-        Product2 testProduct = new Product2(Name = 'SmartPhone Samsung Galaxy S22', ProductCode = 'GS2223', Family = 'SmartPhone', IsActive = true);
+        Product2 testProduct = new Product2(Name = 'Samsung Galaxy S22', ProductCode = 'GS2223', Family = 'SmartPhone', IsActive = true);
         insert testProduct;
         //Insert the product in the standard price book (if necessary)
         PricebookEntry testStandardPBE = new PricebookEntry(Pricebook2Id = Test.getStandardPricebookId(), 
@@ -125,25 +100,22 @@ public class TestDataFactory {
         Pricebook2 testPriceBook = new Pricebook2(Name = 'Price Book Standard', IsActive = true);
         insert testPriceBook;
         //get the standard price book ID
-        //Pricebook2 testStandardPriceBook = [SELECT Id FROM Pricebook2 WHERE isStandard = true LIMIT 1];
         //Insert the product in the custom price book
         PricebookEntry testPriceBookEntry = new PricebookEntry(Pricebook2Id = testPriceBook.Id, 
         Product2Id = testProduct.Id, UnitPrice = PriceUnit, UseStandardPrice = false, IsActive = true);
         insert testPriceBookEntry;
         /*This test method creates accounts with orders. In the test invocation, we can choose number of accounts
         created and number of orders per account, by putting numbers in parameters. */
-        //first we get created user id.
-        //Id UserId = testUser.Id;  //TODO : fix !unresolved!
         //then variables for dates
         Date myDate = Date.today();
         Date futureDate = mydate.addDays(8);
         //Finally create lists for accounts and orders
         List<Account> testAccounts = new List<Account>();
-        List<Order> testOrders = new List<Order>();
+        List<Order> testOrderz = new List<Order>();
         //Then create 2 for loops, each increments depending on the number of accounts/orders.
         for (Integer i = 0; i < numberOfTestAccounts; i++) {
         //Create new accounts
-        Account accountForTest = new Account(Name = 'Account for Testing' + i, OwnerId = testUser.Id);
+        Account accountForTest = new Account(Name = 'Account for Testing ' + i);
         //place these accounts in the list
         testAccounts.add(accountForTest);
         }
@@ -160,10 +132,15 @@ public class TestDataFactory {
                 //on the test order list, add new orders whose account id is found in the list of accounts; 
                 //the effective date is from the date variable; select a shipment cost and the product ID from the testPriceBookEntry. 
                 //Finally, important the status is set on "draft".
-                testOrders.add(new Order(AccountID = testaccts.id, EffectiveDate = myDate, ShipmentCost__c = CostShipment, Pricebook2Id = testPriceBookEntry.Pricebook2Id, Status = 'Draft'));
+                testOrderz.add(new Order(AccountID = testaccts.id, EffectiveDate = myDate, ShipmentCost__c = CostShipment, 
+                Pricebook2Id = testPriceBookEntry.Pricebook2Id, Status = 'Draft'));
         }
         //finally the list of orders is created and has a corresponding account, id and status.
-        insert testOrders;
+        try {
+        insert testOrderz;
+        } catch(Exception e) {
+            System.debug('this occured: ' + e.getMessage());
+        }
         }
         // Create Accounts with an Order
         //Create a list of Order Items
@@ -171,48 +148,34 @@ public class TestDataFactory {
         //starting at 0, as long as the number of order isn't reached, increment
         for (Integer oi = 0; oi < numberOfTestOrderPerAccount; oi++) {
         //variable testOrds corresponds to the testOrders list indexed with this for loop
-            Order testOrds = testOrders[oi];
+            Order testOrds = testOrderz[oi];
             //this second for loop increments: starting with number of tests by increments;
             //as long as the index doesn't reach the number of accounts times the orders per account,
             //then increment.
-            for(Integer napo = numberOfTestAccounts * oi; napo < numberOfTestAccounts * numberOfTestOrderPerAccount * (oi + 1); napo++ ) {
+            for(Integer napo = numberOfTestAccounts * ItemQuantity * oi; napo < numberOfTestAccounts * ItemQuantity * (oi + 1); napo++ ) {
                 //in the orderItem list, add an order item, which price and quantity are determined by method parameter
-                testOrderItem.add(new OrderItem(
-                    OrderID =testOrds.Id,
-                    Product2Id = testProduct.Id,
-                    PricebookEntryId = testPriceBookEntry.Id,
-                    UnitPrice = testPriceBookEntry.UnitPrice,
-                    Quantity = ItemQuantity
-                ));}}
+                testOrderItem.add(new OrderItem(OrderID =testOrds.Id, Product2Id = testProduct.Id, PricebookEntryId = testPriceBookEntry.Id,
+                    UnitPrice = testPriceBookEntry.UnitPrice, Quantity = ItemQuantity)
+                );}}
                 //insert the list of order items
-            insert testOrderItem;
+        insert testOrderItem;
 		//Update Status on Order to "Ordered"
 		List<Order> listOfOrdersToUpdate = new List<Order>();
-		for (Order ord : testOrders) {
-			ord.Status = 'Ordered';
+		for (Order ord : testOrderz) {
+			ord.Status = 'Activated';
 			listOfOrdersToUpdate.add(ord);
 		}
+        try {
 		update listOfOrdersToUpdate;
+        } catch (Exception e) {
+            system.debug('it happened here' + e.getMessage());
+        }
+
         delete testOrderItem;
  }
-
  public static void TestCreateAccountsOrdersItemsForPageController(Integer numberOfTestAccounts, Integer numberOfTestOrderPerAccount, Integer ItemQuantity, Integer PriceUnit, Integer CostShipment) {
     /* this test method creates a product, a pricebook entry standard and custom, orders and orders items*/
-    Profile IdProfile = [SELECT Id FROM Profile WHERE Name = 'Standard User' LIMIT 1];  
-    User testUser = new User(FirstName='Jordan',
-    LastName = 'HAL',
-    Alias = 'hjord',
-    Email = 'jordan.hal@example.com',
-    Username = 'jhal@example.com',
-    ProfileId = IdProfile.id,
-    EmailEncodingKey = 'UTF-8',
-    TimeZoneSidKey = 'GMT+2',
-    LocaleSidKey = 'fr_FR',
-    LanguageLocaleKey = 'fr_FR'
-    );
-    insert testUser;
-    //Create product
-    Product2 testProduct = new Product2(Name = 'SmartPhone Samsung Galaxy S22', ProductCode = 'GS2223', Family = 'SmartPhone', IsActive = true);
+    Product2 testProduct = new Product2(Name = 'Samsung Galaxy S22', ProductCode = 'GS2223', Family = 'SmartPhone', IsActive = true);
     insert testProduct;
     //Insert the product in the standard price book (if necessary)
     PricebookEntry testStandardPBE = new PricebookEntry(Pricebook2Id = Test.getStandardPricebookId(), 
@@ -222,25 +185,22 @@ public class TestDataFactory {
     Pricebook2 testPriceBook = new Pricebook2(Name = 'Price Book Standard', IsActive = true);
     insert testPriceBook;
     //get the standard price book ID
-    //Pricebook2 testStandardPriceBook = [SELECT Id FROM Pricebook2 WHERE isStandard = true LIMIT 1];
     //Insert the product in the custom price book
     PricebookEntry testPriceBookEntry = new PricebookEntry(Pricebook2Id = testPriceBook.Id, 
     Product2Id = testProduct.Id, UnitPrice = PriceUnit, UseStandardPrice = false, IsActive = true);
     insert testPriceBookEntry;
     /*This test method creates accounts with orders. In the test invocation, we can choose number of accounts
     created and number of orders per account, by putting numbers in parameters. */
-    //first we get created user id.
-    //Id UserId = testUser.Id;  //TODO : fix !unresolved!
     //then variables for dates
     Date myDate = Date.today();
     Date futureDate = mydate.addDays(8);
     //Finally create lists for accounts and orders
     List<Account> testAccounts = new List<Account>();
-    List<Order> testOrders = new List<Order>();
+    List<Order> testOrderz = new List<Order>();
     //Then create 2 for loops, each increments depending on the number of accounts/orders.
     for (Integer i = 0; i < numberOfTestAccounts; i++) {
     //Create new accounts
-    Account accountForTest = new Account(Name = 'Account for Testing' + i, OwnerId = testUser.Id);
+    Account accountForTest = new Account(Name = 'Account for Testing ' + i);
     //place these accounts in the list
     testAccounts.add(accountForTest);
     }
@@ -257,10 +217,15 @@ public class TestDataFactory {
             //on the test order list, add new orders whose account id is found in the list of accounts; 
             //the effective date is from the date variable; select a shipment cost and the product ID from the testPriceBookEntry. 
             //Finally, important the status is set on "draft".
-            testOrders.add(new Order(AccountID = testaccts.id, EffectiveDate = myDate, ShipmentCost__c = CostShipment, Pricebook2Id = testPriceBookEntry.Pricebook2Id, Status = 'Draft'));
+            testOrderz.add(new Order(AccountID = testaccts.id, EffectiveDate = myDate, ShipmentCost__c = CostShipment, 
+            Pricebook2Id = testPriceBookEntry.Pricebook2Id, Status = 'Draft'));
     }
     //finally the list of orders is created and has a corresponding account, id and status.
-    insert testOrders;
+    try {
+    insert testOrderz;
+    } catch(Exception e) {
+        System.debug('this occured: ' + e.getMessage());
+    }
     }
     // Create Accounts with an Order
     //Create a list of Order Items
@@ -268,27 +233,22 @@ public class TestDataFactory {
     //starting at 0, as long as the number of order isn't reached, increment
     for (Integer oi = 0; oi < numberOfTestOrderPerAccount; oi++) {
     //variable testOrds corresponds to the testOrders list indexed with this for loop
-        Order testOrds = testOrders[oi];
+        Order testOrds = testOrderz[oi];
         //this second for loop increments: starting with number of tests by increments;
         //as long as the index doesn't reach the number of accounts times the orders per account,
         //then increment.
-        for(Integer napo = numberOfTestAccounts * oi; napo < numberOfTestAccounts * numberOfTestOrderPerAccount * (oi + 1); napo++ ) {
+        for(Integer napo = numberOfTestAccounts * ItemQuantity * oi; napo < numberOfTestAccounts * ItemQuantity * (oi + 1); napo++ ) {
             //in the orderItem list, add an order item, which price and quantity are determined by method parameter
-            testOrderItem.add(new OrderItem(
-                OrderID =testOrds.Id,
-                Product2Id = testProduct.Id,
-                PricebookEntryId = testPriceBookEntry.Id,
-                UnitPrice = testPriceBookEntry.UnitPrice,
-                Quantity = ItemQuantity
-            ));}}
+            testOrderItem.add(new OrderItem(OrderID =testOrds.Id, Product2Id = testProduct.Id, PricebookEntryId = testPriceBookEntry.Id,
+                UnitPrice = testPriceBookEntry.UnitPrice, Quantity = ItemQuantity)
+            );}}
             //insert the list of order items
-        insert testOrderItem;
+    insert testOrderItem;
     //Update Status on Order to "Ordered"
     List<Order> listOfOrdersToUpdate = new List<Order>();
-    for (Order ord : testOrders) {
-        ord.Status = 'Ordered';
+    for (Order ord : testOrderz) {
+        ord.Status = 'Activated';
         listOfOrdersToUpdate.add(ord);
     }
     update listOfOrdersToUpdate;
-}
-}
+}}

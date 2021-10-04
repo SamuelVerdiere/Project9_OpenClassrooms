@@ -1,5 +1,6 @@
 @isTest
 public with sharing class TestOrderPageController {
+    @isTest
     public static void testPositivePermission() {
         /* the test method from the factory takes as parameters :
         - The Number of Accounts needed
@@ -15,12 +16,11 @@ public with sharing class TestOrderPageController {
                        Username = 'jhal@example.com',
                        ProfileId = IdProfile.id,
                        EmailEncodingKey = 'UTF-8',
-                       TimeZoneSidKey = 'GMT+2',
-                       LocaleSidKey = 'fr_FR',
-                       LanguageLocaleKey = 'fr_FR'
+                       TimeZoneSidKey = 'GMT',
+                       LanguageLocaleKey = 'en_US',
+                       LocaleSidKey = 'en_US'
                        );
-        insert testUser;
-        TestDataFactory.TestCreateAccountsOrdersItemsForPageController(1, 2, 2, 10, 1);
+        TestDataFactory.TestCreateAccountsOrdersItemsForPageController(1, 1, 1, 100, 10);
         List<AggregateResult> SumOfResults;
         //WHEN : perform test
         test.startTest();
@@ -30,9 +30,10 @@ public with sharing class TestOrderPageController {
         test.stopTest();
         //THEN : assert
         for (AggregateResult sor : SumOfResults) {
-            System.assertEquals(36, sor.get('totality'));
+            System.assertEquals(100, sor.get('totality'));
         }}
-
+    
+    @isTest
     public static void testNegativePermission() {
         //GIVEN : create data
         Profile IdProfile = [SELECT Id FROM Profile WHERE Name = 'Standard User' LIMIT 1];        
@@ -43,9 +44,9 @@ public with sharing class TestOrderPageController {
                        Username = 'jhal@example.com',
                        ProfileId = IdProfile.id,
                        EmailEncodingKey = 'UTF-8',
-                       TimeZoneSidKey = 'GMT+2',
-                       LocaleSidKey = 'fr_FR',
-                       LanguageLocaleKey = 'fr_FR'
+                       TimeZoneSidKey = 'GMT',
+                       LanguageLocaleKey = 'en_US',
+                       LocaleSidKey = 'en_US'
                        );
         insert testUser;
         TestDataFactory.TestCreateAccountsOrdersItemsForPageController(1, 2, 2, 10, 1);
@@ -57,6 +58,6 @@ public with sharing class TestOrderPageController {
         }
         test.stopTest();
         //THEN : assert
-        system.assert(canSeeContacts.size() != 0, 'this element cannot let the user see contacts');
+        system.assert(canSeeContacts.size() == 0, 'this element cannot let the user see contacts');
     }
 }
