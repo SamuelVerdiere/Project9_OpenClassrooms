@@ -52,7 +52,7 @@ public with sharing class TestTurnoverAccount {
         - The Unit Price of each item
         - The Shipment Cost for each item */        
         //GIVEN : create data
-        TestDataFactory.TestCreateAndUpdateAccountProductsOrdersItems(5, 1, 1, 1, 1);        
+        TestDataFactory.TestCreateAndUpdateAccountProductsOrdersItems(200, 1, 1, 1, 1);        
         List<Account> numberOfAccounts;
         //WHEN : execute test
         Test.startTest();
@@ -61,7 +61,7 @@ public with sharing class TestTurnoverAccount {
         //THEN : assert result
         for(Account noa : numberOfAccounts) {
             //simply create 5 accounts
-            System.assertEquals(5, numberOfAccounts.size());
+            System.assertEquals(200, numberOfAccounts.size());
         }
     }
     @isTest

@@ -12,7 +12,7 @@ public with sharing class OrderTriggerRender {
         for(Account a : accountListToUpdate) {
             Decimal ChiffreAffaire = 0;
             for(Order o : a.Orders) {
-                ChiffreAffaire = ChiffreAffaire + o.NetAmount__c;
+                ChiffreAffaire = ChiffreAffaire + o.NetAmount__c; //ajouté champ ???
                 //on obtient la liste des ordres du compte en question ^ puis on calcule 
             }
             //on donne à la variable int la valeur qu'on a calculée juste avant
