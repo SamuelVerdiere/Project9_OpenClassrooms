@@ -21,7 +21,7 @@ global class UpdateTurnoverBatch implements Database.Batchable<sObject>{
         un constructeur spécial; puis prend l'ensemble des clés de la Map
         par la méthode keyset(). La map sort ensuite du scope et son heap space
         est libéré = efficace pour le gouverneur*/
-        AP01Account.updateChiffreAffaire(setAccountIds);  //cette fonction ni cette classe n'existent ?
+        AP01Account.updateChiffreAffaire(setAccountIds); //cette fonction ni cette classe n'existent ?
     }
      
     global void finish(Database.BatchableContext info){     

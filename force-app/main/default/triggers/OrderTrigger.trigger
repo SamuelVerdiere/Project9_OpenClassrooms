@@ -4,6 +4,6 @@ trigger OrderTrigger on Order (before update, after update) {
         MyOrder.CalculateNetAmountOrder(Trigger.new);
     }
     if(Trigger.isAfter) {
-        MyOrder.CalculateTurnoverAccounts(Trigger.new);
+        MyOrder.CalculateTurnoverAccounts(Trigger.new, Trigger.OldMap);
     }
 }
