@@ -1,7 +1,10 @@
 @isTest
 public with sharing class OrderTriggerTest {
+    /* This test class will perform many methods relative to the Order Triggers.
+    It will test standard scenario, extreme scenariis, conditions inside the triggers logic
+    such as comparing net and total amount and difference caused by shipment cost. */
     @isTest
-    public static void TestNetAmountMultipleOrders() {
+    public static void TestNetAmountMultipleObjects() {
         /* the test method from the factory takes as parameters :
         - The Number of Accounts needed
         - The Number of Orders per Accound needed
@@ -12,22 +15,105 @@ public with sharing class OrderTriggerTest {
         DataFactory.createOrders(2, 3, 6, 1000, 100);
         List<AggregateResult> SumOfResults;
         List<Order> UpdateOrders = new List<Order>();
+        UpdateOrders = [SELECT Id, Status, NetAmount__c FROM Order WHERE Status = 'Draft'];
         //WHEN : execute test
         Test.startTest();
         //first update order status
         for(Order ord : UpdateOrders) {
-            ord.Status = 'Activated';
-            UpdateOrders.add(ord);
-        } update UpdateOrders;
+            ord.Status = 'Activated'; }
+        update UpdateOrders;
         SumOfResults = [SELECT SUM(NetAmount__c) total FROM Order];
         Test.stopTest();
         //THEN : Assert result
         for(AggregateResult sor : SumOfResults) {
             //2 accounts, each has 3 orders = 6 orders. Each order has 6 order items at 1000$ = 36000$ 
-            // minus 6 * 100 shipment cost : 
-            System.assertEquals(34000, sor.get('total'));
+            // minus 6 * 100 shipment cost (per order) = 35400$: 
+            System.assertEquals(35400, sor.get('total'));
         }
     }
+    @isTest
+    public static void TestAmountWith200Orders() {
+        /* the test method from the factory takes as parameters :
+        - The Number of Accounts needed
+        - The Number of Orders per Accound needed
+        - The quantity of Items per order
+        - The Unit Price of each item
+        - The Shipment Cost for each item */
+        //GIVEN : create data
+        DataFactory.createOrders(200, 1, 1, 1000, 0);
+        List<AggregateResult> SumOfResults;
+        List<Order> UpdateOrders = new List<Order>();
+        UpdateOrders = [SELECT Id, Status, NetAmount__c FROM Order WHERE Status = 'Draft'];
+        //WHEN : execute test
+        Test.startTest();
+        //first update order status
+        for(Order ord : UpdateOrders) {
+            ord.Status = 'Activated'; }
+        update UpdateOrders;
+        SumOfResults = [SELECT SUM(NetAmount__c) total FROM Order];
+        Test.stopTest();
+        //THEN : Assert result
+        for(AggregateResult sor : SumOfResults) {
+            System.assertEquals(200000, sor.get('total'));
+        }
+    }
+    @isTest
+    public static void TestIfNetAmountEqualsTotalAmount() {
+        /* the test method from the factory takes as parameters :
+        - The Number of Accounts needed
+        - The Number of Orders per Accound needed
+        - The quantity of Items per order
+        - The Unit Price of each item
+        - The Shipment Cost for each item */
+        //GIVEN : create data
+        DataFactory.createOrders(10, 2, 3, 1000, 0);
+        List<AggregateResult> SumOfResults;
+        List<Order> UpdateOrders = new List<Order>();
+        UpdateOrders = [SELECT Id, Status, NetAmount__c, TotalAmount FROM Order WHERE Status = 'Draft'];
+        //WHEN : execute test
+        Test.startTest();
+        //first update order status
+        for(Order ord : UpdateOrders) {
+            ord.Status = 'Activated'; }
+        update UpdateOrders;
+        SumOfResults = [SELECT SUM(NetAmount__c) netamt, SUM(TotalAmount) totalamt FROM Order];
+        Test.stopTest();
+        //THEN : Assert result
+        for(AggregateResult sor : SumOfResults) {
+            System.assertEquals(sor.get('netamt'), sor.get('totalamt'));
+        }
+    }
+    @isTest
+    public static void TestDifferenceByShipmentCost() {
+        /* the test method from the factory takes as parameters :
+        - The Number of Accounts needed
+        - The Number of Orders per Accound needed
+        - The quantity of Items per order
+        - The Unit Price of each item
+        - The Shipment Cost for each item */
+        //GIVEN : create data
+        DataFactory.createOrders(10, 2, 3, 1000, 500);  
+        // 10*2*3*1000 = 60 000, minus 10*2*500 = 10 000
+        List<AggregateResult> SumOfResults;
+        List<Order> UpdateOrders = new List<Order>();
+        UpdateOrders = [SELECT Id, Status, NetAmount__c, TotalAmount FROM Order WHERE Status = 'Draft'];
+        //WHEN : execute test
+        Test.startTest();
+        //first update order status
+        for(Order ord : UpdateOrders) {
+            ord.Status = 'Activated'; }
+        update UpdateOrders;
+        SumOfResults = [SELECT SUM(NetAmount__c) netamt, SUM(TotalAmount) totalamt FROM Order];
+        Test.stopTest();
+        //THEN : Assert result
+        for(AggregateResult sor : SumOfResults) {
+        Decimal getNetAmt = (Decimal)sor.get('netamt');
+        Decimal gettotalamt = (Decimal)sor.get('totalamt');
+            System.assertEquals(10000, (gettotalamt - getNetAmt));
+        }
+    }
+
+
     // @isTest
     // public static void TestNetAmountWithShipmentCost() {
     //     /* the test method from the factory takes as parameters :
@@ -160,7 +246,7 @@ public with sharing class OrderTriggerTest {
         //     - The Unit Price of each item
         //     - The Shipment Cost for each item */        
         //     //GIVEN : create data
-        //     TestDataFactory.TestCreateAndUpdateAccountProductsOrdersItems(200, 1, 1, 1, 1);        
+        //     DataFactory.createOrders(200, 1, 1, 1, 1);        
         //     List<Account> numberOfAccounts;
         //     //WHEN : execute test
         //     Test.startTest();
