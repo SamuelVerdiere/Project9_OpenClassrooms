@@ -13,7 +13,7 @@ public class OrderTriggerRender {
                 o.NetAmount__c = o.TotalAmount;
             }
         }}
-    public void CalculateTurnoverAccounts(List<Order> newOrders, Map<Id, Order> mapOldOrders) {
+    public void CalculateTurnoverAccounts(List<Order> newOrders) {
         //create new set of IDs, then query for accounts-turnover and orders-netAmount with new set of ids
         set<Id> setAccountIds = new set<Id>();
         //for each orders in the list of triggered orders, add the new set of Ids to AccountID
