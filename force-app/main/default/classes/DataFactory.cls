@@ -1,11 +1,10 @@
 @isTest
-public class DataFactory { //renommer DataFactory => pas de "test" dans les noms de méthode Ex : CreateOrders(), CreateUser() 
-//nom du triggerTest, nom de classeTest //renommer variables -test aussi
+public class DataFactory {
     public static void createOrders(Integer numberOfAccounts, Integer numberOfOrders, 
     Integer ItemQuantity, Integer PriceUnit, Integer CostShipment) {
         /*This test method creates accounts with orders. In the test invocation, we can choose number of accounts
-        created and number of orders per account, by putting numbers in parameters. */
-        /* this test method creates a user, product, a pricebook entry standard and custom, orders and orders items*/
+        created and number of orders per account, by putting numbers in parameters.
+        this test method creates a user, product, a pricebook entry standard and custom, orders and orders items*/
         //Create product
         Product2 testProduct = new Product2(
             Name = 'Samsung Galaxy S22', 
@@ -51,20 +50,19 @@ public class DataFactory { //renommer DataFactory => pas de "test" dans les noms
         }
         //create these accounts from the list.
         insert testAccounts;
-        /* COMPTES CREES EN FONCTION DE NUMBEROFACCOUNTS. */
+        /* Now accounts are created, depending on variable "numberOfAccounts". */
 
         //this for loop increments depending of number of accounts selected
         for(Integer a = 0; a < testAccounts.size(); a++) {
         //accounts in the for loop are the ones from previous for loop
             Account testaccts = testAccounts[a];
-            //this second for loop increments : starting with number of orders by increment;
-            //as long as the index doesn't reach the number of order per acccount, which is at least 1, 
-            //then increment. 
-            //revoir boucle for = pas besoin de calculer
+            /* This second for loop increments : starting with number of orders by increment;
+            as long as the index doesn't reach the number of order per acccount, which is at least 1, 
+            then increment.*/
             for(Integer o = 0 ; o < numberOfOrders ; o++) { 
-                //on the test order list, add new orders whose account id is found in the list of accounts; 
-                //the effective date is from the date variable; select a shipment cost and the product ID from the testPriceBookEntry. 
-                //Finally, important the status is set on "draft".
+                /*On the test order list, add new orders whose account id is found in the list of accounts; 
+                the effective date is from the date variable; select a shipment cost and the product ID from the testPriceBookEntry. 
+                Finally, important the status is set on "draft".*/
                 testOrderz.add(new Order(
                 AccountID = testaccts.id, 
                 EffectiveDate = myDate, 
@@ -72,18 +70,18 @@ public class DataFactory { //renommer DataFactory => pas de "test" dans les noms
                 Pricebook2Id = testPriceBookEntry.Pricebook2Id, 
                 Status = 'Draft'));
         }
-        //finally the list of orders is created and has a corresponding account, id and status.
         }
         insert testOrderz;
-        //requête ou retourner les orders pour les récupérer et les MAJ dans le test
-        // Create Accounts with an Order
+        /* Now Orders are created, depending on variable "numberOfOrders".*/
+
+        //Create items for each order
         //starting at 0, as long as the number of order isn't reached, increment
         for (Integer oi = 0; oi < testOrderz.size(); oi++) {
         //variable testOrds corresponds to the testOrders list indexed with this for loop
             Order testOrds = testOrderz[oi];
-            //this second for loop increments: starting with number of tests by increments;
-            //as long as the index doesn't reach the number of accounts times the orders per account,
-            //then increment.
+            /* This second for loop increments: starting with number of tests by increments;
+            as long as the index doesn't reach the number of accounts times the orders per account,
+            then increment.*/
             for(Integer ori = 0; ori < ItemQuantity; ori++ ) {
                 //in the orderItem list, add an order item, which price and quantity are determined by method parameter
                 testOrderItem.add(new OrderItem(
@@ -97,7 +95,10 @@ public class DataFactory { //renommer DataFactory => pas de "test" dans les noms
         insert testOrderItem;
         update testOrderz;
         update testAccounts;
+        //update accounts, orders and items.
 }
+    /* This test method creates an user with standard permission, 
+    for testing purposes. */
     public static User createUser() {
     Profile IdProfile = [SELECT Id FROM Profile WHERE Name = 'Standard User' LIMIT 1];        
     User testUser = new User(FirstName='Jordan',

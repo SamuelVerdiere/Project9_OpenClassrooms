@@ -1,5 +1,8 @@
 @isTest
 public with sharing class OrderPageTest {
+    /* This test class will perform many tests relative to the Order Page.
+    It will test positive and negative permissions about this Order Page. */
+
     @TestSetup
     static void createUser(){
     DataFactory.createUser();
@@ -25,7 +28,7 @@ public with sharing class OrderPageTest {
         test.stopTest();
         //THEN : assert
         for (AggregateResult sor : SumOfResults) {
-            System.assertEquals(90, sor.get('totality'));
+            System.assertEquals(100, sor.get('totality'));
         }}
     
     @isTest
