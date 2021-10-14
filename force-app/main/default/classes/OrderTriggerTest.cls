@@ -270,41 +270,6 @@ public with sharing class OrderTriggerTest {
             System.assertNotEquals(totalAmt, turnover, 'Error : Difference is ' + (difference));
             System.assertEquals(expectedResult, difference);
             }
-    // @isTest
-    // public static void CalculateIfTurnoverIsnotNull() {
-    //     /* the test method from the factory takes as parameters :
-    //     - The Number of Accounts needed
-    //     - The Number of Orders per Accound needed
-    //     - The quantity of Items per order
-    //     - The Unit Price of each item
-    //     - The Shipment Cost for each item */
-    //     //GIVEN : create data
-    //     DataFactory.createOrders(2, 4, 1, 1000, 0);
-    //     List<AggregateResult> SumOfResults;
-    //     List<Account> UpdateAccounts = new List<Account>();
-    //     List<Order> UpdateOrders = new List<Order>();
-    //     UpdateOrders = [SELECT Id, Status, NetAmount__c, AccountId FROM Order WHERE Status = 'Draft'];
-    //     UpdateAccounts = [SELECT Id, Chiffre_d_affaire__c FROM Account];
-    //     //WHEN : execute test
-    //     Test.startTest();
-    //     //first put turnover to 5000 then activate order status
-    //     for(Account acc : UpdateAccounts) {
-    //         acc.Chiffre_d_affaire__c = 5000;
-    //     }
-    //     update UpdateAccounts;
-    //     for(Order ord : UpdateOrders) {
-    //             ord.Status = 'Activated';
-    //     }
-    //     update UpdateOrders;
-    //     update UpdateAccounts;
-    //     SumOfResults = [SELECT SUM(Chiffre_d_affaire__c) total FROM Account];
-    //     Decimal total = (Decimal)SumOfResults[0].get('total');
-    //     Test.stopTest();
-    //     //THEN : Assert result
-    //     /* the turnover which was 5000 should be 18000 : 
-    //     2 accounts, each 4 order at 1000 = 8000 + (2*5000) */
-    //     System.assertEquals(18000, total);
-    // }
 
     @isTest
     public static void TestWithTwoHundredAccounts() {
@@ -336,4 +301,45 @@ public with sharing class OrderTriggerTest {
         //THEN : assert result
         System.assertEquals(expectedResult, total, 'Error : incorrect value.');
     }
+    
+    @isTest
+    public static void CalculateIfTurnoverIsnotNull() {
+        /* the test method from the factory takes as parameters :
+        - The Number of Accounts needed
+        - The Number of Orders per Accound needed
+        - The quantity of Items per order
+        - The Unit Price of each item
+        - The Shipment Cost for each item */
+        //GIVEN : create data
+        DataFactory.createOrders(2, 4, 1, 1000, 0);
+        List<AggregateResult> SumOfResults;
+        List<Account> UpdateAccounts = new List<Account>();
+        List<Order> UpdateOrders = new List<Order>();
+        UpdateAccounts = [SELECT Id, Chiffre_d_affaire__c, (SELECT Id, Status, NetAmount__c, AccountId FROM Orders WHERE Status = 'Draft')FROM Account];
+        //WHEN : execute test
+        Test.startTest();
+        Decimal turnover = 0;
+        //first put turnover to 5000 then activate order status
+        for(Account acc : UpdateAccounts) {
+            turnover = acc.Chiffre_d_affaire__c + 5000;
+            acc.Chiffre_d_affaire__c = turnover;
+        }
+        update UpdateAccounts;
+        for(Account acc : UpdateAccounts) {
+        for(Order ord : UpdateOrders) {
+                ord.Status = 'Activated';
+                UpdateOrders.add(ord);
+        }
+    }
+        update UpdateAccounts;
+        update UpdateOrders;
+        SumOfResults = [SELECT SUM(Chiffre_d_affaire__c) total FROM Account];
+        Decimal total = (Decimal)SumOfResults[0].get('total');
+        Test.stopTest();
+        //THEN : Assert result
+        /* the turnover which was 5000 should be 18000 : 
+        2 accounts, each 4 order at 1000 = 8000 + (2*5000) */
+        System.assertEquals(18000, total);
+    }
+
 }
