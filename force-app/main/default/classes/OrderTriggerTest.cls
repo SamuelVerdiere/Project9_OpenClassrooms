@@ -311,35 +311,39 @@ public with sharing class OrderTriggerTest {
         - The Unit Price of each item
         - The Shipment Cost for each item */
         //GIVEN : create data
+        set<Id> setAccountIds = new set<Id>();
+        Date myDate = Date.today();
+        Date futureDate = myDate.addDays(8);
         DataFactory.createOrders(2, 4, 1, 1000, 0);
         List<AggregateResult> SumOfResults;
         List<Account> UpdateAccounts = new List<Account>();
         List<Order> UpdateOrders = new List<Order>();
-        UpdateAccounts = [SELECT Id, Chiffre_d_affaire__c, (SELECT Id, Status, NetAmount__c, AccountId FROM Orders WHERE Status = 'Draft')FROM Account];
+        UpdateAccounts = [SELECT Id, Chiffre_d_affaire__c, (SELECT Id, Status, NetAmount__c, AccountId, Pricebook2Id FROM Orders WHERE Status = 'Draft')FROM Account];
         //WHEN : execute test
         Test.startTest();
-        Decimal turnover = 0;
-        //first put turnover to 5000 then activate order status
         for(Account acc : UpdateAccounts) {
-            turnover = acc.Chiffre_d_affaire__c + 5000;
-            acc.Chiffre_d_affaire__c = turnover;
-        }
-        update UpdateAccounts;
-        for(Account acc : UpdateAccounts) {
-        for(Order ord : UpdateOrders) {
+        for(Order ord : acc.Orders) {
                 ord.Status = 'Ordered';
                 UpdateOrders.add(ord);
-        }
-    }
+        }}
         update UpdateAccounts;
+        update UpdateOrders;
+        DataFactory.createOrders(2, 4, 1, 1000, 0);
+        List<Account> addAccounts = new List<Account>();
+        addAccounts = [SELECT Id, Chiffre_d_affaire__c, (SELECT Id, Status, NetAmount__c, AccountId, Pricebook2Id FROM Orders WHERE Status = 'Draft')FROM Account];
+        for(Account accts : addAccounts) {
+            for(Order ord : accts.Orders) {
+                ord.Status = 'Ordered';
+                UpdateOrders.add(ord);
+        }}
+        update addAccounts;
         update UpdateOrders;
         SumOfResults = [SELECT SUM(Chiffre_d_affaire__c) total FROM Account];
         Decimal total = (Decimal)SumOfResults[0].get('total');
         Test.stopTest();
         //THEN : Assert result
-        /* the turnover which was 5000 should be 18000 : 
-        2 accounts, each 4 order at 1000 = 8000 + (2*5000) */
-        System.assertEquals(18000, total);
+        /* the turnover should be 16000 : 
+        2 accounts, each 4 order at 1000 = 8000   */
+        System.assertEquals(16000, total);
     }
-
 }
