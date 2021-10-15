@@ -14,17 +14,19 @@ public class OrderTriggerRender {
             }
         }}
     public void CalculateTurnoverAccounts(List<Order> newOrders) {
-        //create new set of IDs, then query for accounts-turnover and orders-netAmount with new set of ids
+        //create new set of IDs, then query for accounts-turnover and orders-netAmount 
+        //with new set of ids
         set<Id> setAccountIds = new set<Id>();
-        //for each orders in the list of triggered orders, add the new set of Ids to AccountID
-        //for each order of the triggered orders list, if relative account id is not null, add this id to the list of account ids
+        /* for each orders in the list of triggered orders, add the new set of Ids to AccountID
+        for each order of the triggered orders list, if relative account id is not null, 
+        add this id to the list of account ids */
         for(Order o : newOrders) {
             if (o.AccountId != null) {
             setAccountIds.add(o.AccountId);
         }}
         //query elements from Account & Orders that we need.
         List<Account> accountListToUpdate = [SELECT Id, Chiffre_d_affaire__c, 
-        (SELECT Id,TotalAmount, NetAmount__c FROM Orders WHERE Status = 'Activated') 
+        (SELECT Id,TotalAmount, NetAmount__c FROM Orders WHERE Status = 'Ordered') 
         FROM Account WHERE Id IN : setAccountIds];
 
         //for each account in the queried list (create decimal variable)

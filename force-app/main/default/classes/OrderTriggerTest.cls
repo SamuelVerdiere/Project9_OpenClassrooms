@@ -23,10 +23,10 @@ public with sharing class OrderTriggerTest {
         Test.startTest();
         //first update order status
         for(Order ord : UpdateOrders) {
-            ord.Status = 'Activated'; }
+            ord.Status = 'Ordered'; }
         update UpdateOrders;
         Test.stopTest();
-        SumOfResults = [SELECT SUM(NetAmount__c) total FROM Order WHERE Status = 'Activated'];
+        SumOfResults = [SELECT SUM(NetAmount__c) total FROM Order WHERE Status = 'Ordered'];
         //THEN : Assert result
         for(AggregateResult sor : SumOfResults) {
             Decimal result = (Decimal)sor.get('total');
@@ -51,10 +51,10 @@ public with sharing class OrderTriggerTest {
         Test.startTest();
         //first update order status
         for(Order ord : UpdateOrders) {
-            ord.Status = 'Activated'; }
+            ord.Status = 'Ordered'; }
         update UpdateOrders;
         Test.stopTest();
-        SumOfResults = [SELECT SUM(NetAmount__c) total FROM Order WHERE Status = 'Activated'];
+        SumOfResults = [SELECT SUM(NetAmount__c) total FROM Order WHERE Status = 'Ordered'];
         //THEN : Assert result
         for(AggregateResult sor : SumOfResults) {
             Decimal result = (Decimal)sor.get('total');
@@ -80,11 +80,11 @@ public with sharing class OrderTriggerTest {
         Test.startTest();
         //first update order status
         for(Order ord : UpdateOrders) {
-            ord.Status = 'Activated'; }
+            ord.Status = 'Ordered'; }
         update UpdateOrders;
         Test.stopTest();
         //THEN : Assert result
-        SumOfResults = [SELECT SUM(NetAmount__c) total FROM Order WHERE Status = 'Activated'];
+        SumOfResults = [SELECT SUM(NetAmount__c) total FROM Order WHERE Status = 'Ordered'];
         for(AggregateResult sor : SumOfResults) {
             Decimal result = (Decimal)sor.get('total');
             System.assertEquals(expectedResult, result, 'Error : incorrect net amount value.');
@@ -109,11 +109,11 @@ public with sharing class OrderTriggerTest {
         //first update order status
         for(Order ord : UpdateOrders) {
             ord.ShipmentCost__c = null;
-            ord.Status = 'Activated'; }
+            ord.Status = 'Ordered'; }
         update UpdateOrders;
         Test.stopTest();
         //THEN : Assert result
-        SumOfResults = [SELECT SUM(NetAmount__c) netamt, SUM(TotalAmount) totalamt FROM Order WHERE Status = 'Activated'];
+        SumOfResults = [SELECT SUM(NetAmount__c) netamt, SUM(TotalAmount) totalamt FROM Order WHERE Status = 'Ordered'];
         for(AggregateResult sor : SumOfResults) {
             Decimal expectedResult = (Decimal)sor.get('netamt');
             Decimal result = (Decimal)sor.get('totalamt');
@@ -139,9 +139,9 @@ public with sharing class OrderTriggerTest {
         Test.startTest();
         //first update order status
         for(Order ord : UpdateOrders) {
-            ord.Status = 'Activated'; }
+            ord.Status = 'Ordered'; }
         update UpdateOrders;
-        SumOfResults = [SELECT SUM(NetAmount__c) netamt, SUM(TotalAmount) totalamt FROM Order WHERE Status = 'Activated'];
+        SumOfResults = [SELECT SUM(NetAmount__c) netamt, SUM(TotalAmount) totalamt FROM Order WHERE Status = 'Ordered'];
         Test.stopTest();
         //THEN : Assert result
         for(AggregateResult sor : SumOfResults) {
@@ -171,9 +171,9 @@ public with sharing class OrderTriggerTest {
         Test.startTest();
         //first update order status
         for(Order ord : UpdateOrders) {
-            ord.Status = 'Activated'; }
+            ord.Status = 'Ordered'; }
         update UpdateOrders;
-        BeforeResults = [SELECT SUM(NetAmount__c) oldamt FROM Order WHERE Status = 'Activated'];
+        BeforeResults = [SELECT SUM(NetAmount__c) oldamt FROM Order WHERE Status = 'Ordered'];
         Decimal oldPrice = (Decimal)BeforeResults[0].get('oldamt');
         for(Order upor : UpdateOrders) {
             for(OrderItem oi : upor.OrderItems) {
@@ -184,7 +184,7 @@ public with sharing class OrderTriggerTest {
         }
         update OrderItems;
         update UpdateOrders;
-        SumOfResults = [SELECT SUM(NetAmount__c) newamt FROM Order WHERE Status = 'Activated'];
+        SumOfResults = [SELECT SUM(NetAmount__c) newamt FROM Order WHERE Status = 'Ordered'];
         Decimal newPrice = (Decimal)SumOfResults[0].get('newamt');
         Test.stopTest();
         //THEN : Assert result
@@ -213,7 +213,7 @@ public with sharing class OrderTriggerTest {
         //first update order status
         for(Account acc : UpdateAccounts) {
             for(Order ord : acc.Orders) {
-                ord.Status = 'Activated';
+                ord.Status = 'Ordered';
             }}
         update UpdateAccounts;
         for(Account acc: UpdateAccounts) {
@@ -250,7 +250,7 @@ public with sharing class OrderTriggerTest {
             Test.startTest();
             //first update order status
             for(Order ord : UpdateOrders) {
-                    ord.Status = 'Activated';
+                    ord.Status = 'Ordered';
                     setAccountIds.add(ord.AccountId);
             }
             update UpdateOrders;
@@ -259,7 +259,7 @@ public with sharing class OrderTriggerTest {
             }
             update UpdateOrders;
             SumOfResults = [SELECT SUM(Chiffre_d_affaire__c) turnover FROM Account WHERE Id IN : setAccountIds];
-            TotalAmounts = [SELECT SUM(TotalAmount) totalamt FROM Order WHERE Status = 'Activated'];
+            TotalAmounts = [SELECT SUM(TotalAmount) totalamt FROM Order WHERE Status = 'Ordered'];
             Test.stopTest();
             //THEN : Assert result
             Decimal turnover = (Decimal)SumOfResults[0].get('turnover');
@@ -290,7 +290,7 @@ public with sharing class OrderTriggerTest {
         Test.startTest();
         //first update order status
             for(Order ord : UpdateOrders) {
-                ord.Status = 'Activated';
+                ord.Status = 'Ordered';
                 ord.Description = 'Test Description.';
                 setAccountIds.add(ord.AccountId);
         }
@@ -327,7 +327,7 @@ public with sharing class OrderTriggerTest {
         update UpdateAccounts;
         for(Account acc : UpdateAccounts) {
         for(Order ord : UpdateOrders) {
-                ord.Status = 'Activated';
+                ord.Status = 'Ordered';
                 UpdateOrders.add(ord);
         }
     }

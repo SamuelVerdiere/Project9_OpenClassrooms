@@ -24,7 +24,7 @@ public with sharing class AccountTurnoverUpdateBatchTest {
         UpdateAccounts = [SELECT Id, Chiffre_d_affaire__c, (SELECT Id, TotalAmount FROM Orders WHERE Status='Draft') FROM Account];
         for(Account acc : UpdateAccounts) {
         for(Order ord : acc.Orders) {
-            ord.Status = 'Activated'; 
+            ord.Status = 'Ordered'; 
         }}
         update UpdateAccounts;
         //WHEN : execute test
@@ -33,7 +33,7 @@ public with sharing class AccountTurnoverUpdateBatchTest {
         Id batchId = Database.executeBatch(atub);
         Test.stopTest();
         //THEN : assert result
-        AccountsUpdated = [SELECT Id, Chiffre_d_affaire__c FROM Account WHERE Id IN (SELECT AccountId FROM Order WHERE Status = 'Activated')];
+        AccountsUpdated = [SELECT Id, Chiffre_d_affaire__c FROM Account WHERE Id IN (SELECT AccountId FROM Order WHERE Status = 'Ordered')];
         for(Account a : AccountsUpdated) {
             System.assertEquals(numOfAccount, AccountsUpdated.size(), 'ERROR : Not all Accounts were updated.');
         }

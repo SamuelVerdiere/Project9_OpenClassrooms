@@ -1,12 +1,12 @@
 global class AccountTurnoverUpdateBatch implements Database.Batchable<sObject>, Database.Stateful {
     public Integer processedRecords = 0;
 	global Database.QueryLocator start(Database.BatchableContext info) {
-        //we perform a precise query to get accounts with turnover and their relative orders, which are activated
+        //we perform a precise query to get accounts with turnover and their relative orders, which are Ordered
         return Database.getQueryLocator([SELECT Id, Chiffre_d_affaire__c, 
         (SELECT AccountId, 
         NetAmount__c 
         FROM Orders
-        WHERE Status ='Activated') 
+        WHERE Status ='Ordered') 
         FROM Account]
         );
     }
