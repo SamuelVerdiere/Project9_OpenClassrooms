@@ -6,33 +6,17 @@ public class DataFactory {
         created and number of orders per account, by putting numbers in parameters.
         this test method creates a user, product, a pricebook entry standard and custom, orders and orders items*/
         //Create product
-        Product2 testProduct = new Product2(
-            Name = 'Samsung Galaxy S22', 
-            ProductCode = 'GS2223', 
-            Family = 'SmartPhone', 
-            IsActive = true);
+        Product2 testProduct = new Product2(Name = 'Samsung Galaxy S22', ProductCode = 'GS2223', Family = 'SmartPhone', IsActive = true);
         insert testProduct;
         //Insert the product in the standard price book (if necessary)
-        PricebookEntry testStandardPBE = new PricebookEntry(
-            Pricebook2Id = Test.getStandardPricebookId(), 
-            Product2Id = testProduct.Id, 
-            UnitPrice = PriceUnit, 
-            UseStandardPrice = false, 
-            IsActive = true);
+        PricebookEntry testStandardPBE = new PricebookEntry(Pricebook2Id = Test.getStandardPricebookId(), Product2Id = testProduct.Id, UnitPrice = PriceUnit, UseStandardPrice = false, IsActive = true);
         insert testStandardPBE;
         //create custom price book
-        Pricebook2 testPriceBook = new Pricebook2(
-            Name = 'Price Book Standard', 
-            IsActive = true);
+        Pricebook2 testPriceBook = new Pricebook2(Name = 'Price Book Standard', IsActive = true);
         insert testPriceBook;
         //get the standard price book ID
         //Insert the product in the custom price book
-        PricebookEntry testPriceBookEntry = new PricebookEntry(
-            Pricebook2Id = testPriceBook.Id, 
-            Product2Id = testProduct.Id, 
-            UnitPrice = PriceUnit, 
-            UseStandardPrice = false, 
-            IsActive = true);
+        PricebookEntry testPriceBookEntry = new PricebookEntry(Pricebook2Id = testPriceBook.Id, Product2Id = testProduct.Id, UnitPrice = PriceUnit, UseStandardPrice = false, IsActive = true);
         insert testPriceBookEntry;
         //then variables for dates
         Date myDate = Date.today();
@@ -63,14 +47,7 @@ public class DataFactory {
                 /*On the test order list, add new orders whose account id is found in the list of accounts; 
                 the effective date is from the date variable; select a shipment cost and the product ID from the testPriceBookEntry. 
                 Finally, important the status is set on "draft".*/
-                testOrderz.add(new Order(
-                AccountID = testaccts.id, 
-                EffectiveDate = myDate, 
-                ShipmentCost__c = CostShipment, 
-                Pricebook2Id = testPriceBookEntry.Pricebook2Id, 
-                Status = 'Draft'));
-        }
-        }
+                testOrderz.add(new Order(AccountID = testaccts.id, EffectiveDate = myDate, ShipmentCost__c = CostShipment, Pricebook2Id = testPriceBookEntry.Pricebook2Id, Status = 'Draft'));}}
         insert testOrderz;
         /* Now Orders are created, depending on variable "numberOfOrders".*/
 
@@ -84,35 +61,18 @@ public class DataFactory {
             then increment.*/
             for(Integer ori = 0; ori < ItemQuantity; ori++ ) {
                 //in the orderItem list, add an order item, which price and quantity are determined by method parameter
-                testOrderItem.add(new OrderItem(
-                OrderID =testOrds.Id, 
-                Product2Id = testProduct.Id, 
-                PricebookEntryId = testPriceBookEntry.Id,
-                UnitPrice = testPriceBookEntry.UnitPrice, 
-                Quantity = 1)
-                );}}
+                testOrderItem.add(new OrderItem(OrderID =testOrds.Id, Product2Id = testProduct.Id, PricebookEntryId = testPriceBookEntry.Id,UnitPrice = testPriceBookEntry.UnitPrice, Quantity = 1));}}
                 //insert the list of order items
         insert testOrderItem;
         update testOrderz;
         update testAccounts;
         //update accounts, orders and items.
-}
+    }
     /* This test method creates an user with standard permission, 
     for testing purposes. */
     public static User createUser() {
     Profile IdProfile = [SELECT Id FROM Profile WHERE Name = 'Standard User' LIMIT 1];        
-    User testUser = new User(FirstName='Jordan',
-                   LastName = 'HAL',
-                   Alias = 'hjord',
-                   Email = 'jordan.hal@example.com',
-                   Username = 'jhal@example.com',
-                   ProfileId = IdProfile.id,
-                   EmailEncodingKey = 'UTF-8',
-                   TimeZoneSidKey = 'GMT',
-                   LanguageLocaleKey = 'en_US',
-                   LocaleSidKey = 'en_US'
-                   );
+    User testUser = new User(FirstName='Jordan',LastName = 'HAL',Alias = 'hjord',Email = 'jordan.hal@example.com',Username = 'jhal@example.com',ProfileId = IdProfile.id,EmailEncodingKey = 'UTF-8',TimeZoneSidKey = 'GMT',LanguageLocaleKey = 'en_US',LocaleSidKey = 'en_US');
     insert testUser;
     return testUser;
-    }
-}
+    }}

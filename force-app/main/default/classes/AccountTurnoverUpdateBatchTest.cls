@@ -12,8 +12,8 @@ public with sharing class AccountTurnoverUpdateBatchTest {
         - The Unit Price of each item
         - The Shipment Cost for each item */
         //GIVEN : create date
-        Integer numOfAccount = 208;
-        Integer numOfOrders = 252;
+        Integer numOfAccount = 10;
+        Integer numOfOrders = 208;
         Integer numOfOrderItems = 10;
         Integer UnitPrices = 6500;
         Integer ShipCosts = 500;
@@ -22,13 +22,13 @@ public with sharing class AccountTurnoverUpdateBatchTest {
         List<Account> UpdateAccounts = new List<Account>();
         List<Account> AccountsUpdated = new List<Account>();
         UpdateAccounts = [SELECT Id, Chiffre_d_affaire__c, (SELECT Id, TotalAmount FROM Orders WHERE Status='Draft') FROM Account];
-        for(Account acc : UpdateAccounts) {
-        for(Order ord : acc.Orders) {
-            ord.Status = 'Ordered'; 
-        }}
         update UpdateAccounts;
         //WHEN : execute test
         Test.startTest();
+        for(Account acc : UpdateAccounts) {
+            for(Order ord : acc.Orders) {
+                ord.Status = 'Ordered'; 
+            }}
         AccountTurnoverUpdateBatch atub = new AccountTurnoverUpdateBatch();
         Id batchId = Database.executeBatch(atub);
         Test.stopTest();
@@ -42,5 +42,3 @@ public with sharing class AccountTurnoverUpdateBatchTest {
         }
     }
 }
-// 58 500 000 - 225 000
-// ship cost : 225 000

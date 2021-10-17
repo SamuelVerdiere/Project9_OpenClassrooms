@@ -240,7 +240,7 @@ public with sharing class OrderTriggerTest {
             - The Unit Price of each item
             - The Shipment Cost for each item */
             //GIVEN : create data
-            DataFactory.createOrders(5, 4, 3, 1250, 0);
+            DataFactory.createOrders(1, 200, 1, 1250, 0);
             set<Id> setAccountIds = new set<Id>();
             List<AggregateResult> SumOfResults;
             List<AggregateResult> TotalAmounts;
@@ -265,8 +265,9 @@ public with sharing class OrderTriggerTest {
             Decimal turnover = (Decimal)SumOfResults[0].get('turnover');
             Decimal totalAmt = (Decimal)TotalAmounts[0].get('totalamt');
             Decimal difference = totalAmt - turnover;
-            Decimal expectedResult = 5000;
+            Decimal expectedResult = 50000;
             //the turnover must be updated and = to total amount after order is updated
+            //shipment cost is 250 * 200 = 50 000 so this must be the difference between total amount and turnover
             System.assertNotEquals(totalAmt, turnover, 'Error : Difference is ' + (difference));
             System.assertEquals(expectedResult, difference);
             }

@@ -31,12 +31,12 @@ public class OrderTriggerRender {
 
         //for each account in the queried list (create decimal variable)
         for(Account a : accountListToUpdate) {
-            Decimal ChiffreAffaire = 0;
-            //for each order in each account of the list add net amount to the variable ChiffreAffaire.
+            Decimal turnover = 0;
+            //for each order in each account of the list add net amount to the variable turnover.
             for(Order o : a.Orders) {
-                ChiffreAffaire += o.NetAmount__c;
+                turnover += o.NetAmount__c;
             }
-            a.Chiffre_d_affaire__c = ChiffreAffaire;
+            a.Chiffre_d_affaire__c = turnover;
         }
         //Outside the loop, we update the account list and their orders.
         update accountListToUpdate;
