@@ -117,6 +117,7 @@ public with sharing class OrderTriggerTest {
         for(AggregateResult sor : SumOfResults) {
             Decimal expectedResult = (Decimal)sor.get('netamt');
             Decimal result = (Decimal)sor.get('totalamt');
+            //check if calculation is correct
             System.assertEquals(expectedResult, result, 'Error : incorrect amount value.');
         }
     }
@@ -147,6 +148,7 @@ public with sharing class OrderTriggerTest {
         for(AggregateResult sor : SumOfResults) {
         Decimal getNetAmt = (Decimal)sor.get('netamt');
         Decimal gettotalamt = (Decimal)sor.get('totalamt');
+        //compare the difference created by shipment cost
             System.assertEquals(expectedResult, (gettotalamt - getNetAmt), 'Error : incorrect value.');
         }
     }
@@ -188,6 +190,7 @@ public with sharing class OrderTriggerTest {
         Decimal newPrice = (Decimal)SumOfResults[0].get('newamt');
         Test.stopTest();
         //THEN : Assert result
+        //check if price is updated & if the result is correctly calculated by trigger
         System.assertNotEquals(oldPrice, newPrice, 'Error : difference is : ' + (newPrice - oldPrice) + ' . ');
         System.assertEquals(expectedResult, newPrice, 'Error : incorrect value.');
     }
@@ -228,7 +231,7 @@ public with sharing class OrderTriggerTest {
         //THEN : Assert result
         Decimal turnover = (Decimal)SumOfResults[0].get('turnover');
         Decimal totalamount = (Decimal)Netamounts[0].get('totalamt');
-            //the turnover must be updated and = to total amount after order is updated
+            //the turnover must be updated and equal to total amount after order is updated
         System.assertNotEquals(totalamount, turnover, 'Error : difference is ' + (totalamount - turnover) + ' .');
         }
 
@@ -269,6 +272,7 @@ public with sharing class OrderTriggerTest {
             Decimal expectedResult = 50000;
             //the turnover must be updated and = to total amount after order is updated
             //shipment cost is 250 * 200 = 50 000 so this must be the difference between total amount and turnover
+            //this test reaches the governor limit
             System.assertNotEquals(totalAmt, turnover, 'Error : Difference is ' + (difference));
             System.assertEquals(expectedResult, difference);
             }
@@ -301,6 +305,7 @@ public with sharing class OrderTriggerTest {
         SumOfResults = [SELECT SUM(Chiffre_d_affaire__c) total FROM Account WHERE Id IN : setAccountIds];
         Decimal total = (Decimal)SumOfResults[0].get('total');
         //THEN : assert result
+        //this test reaches the governor limit
         System.assertEquals(expectedResult, total, 'Error : incorrect value.');
     }
     
@@ -345,7 +350,8 @@ public with sharing class OrderTriggerTest {
         Test.stopTest();
         //THEN : Assert result
         /* the turnover should be 16000 : 
-        2 accounts, each 4 order at 1000 = 8000   */
+        2 accounts, each 4 order at 1000 = 8000  
+        This checks the if/else in the trigger method */
         System.assertEquals(16000, total);
     }
 }

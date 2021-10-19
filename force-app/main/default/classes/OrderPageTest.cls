@@ -20,12 +20,14 @@ public with sharing class OrderPageTest {
         List<AggregateResult> SumOfResults;
         //WHEN : perform test
         test.startTest();
+        //the user wants to get the sum of total amounts
         System.runAs(testUser) {
             SumOfResults = [SELECT SUM(TotalAmount) totality FROM Order];            
         }
         test.stopTest();
         //THEN : assert
         for (AggregateResult sor : SumOfResults) {
+            //the user is able to see the total amount
             System.assertEquals(100, sor.get('totality'));
         }}
 }

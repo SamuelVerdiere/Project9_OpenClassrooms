@@ -1,6 +1,6 @@
 public class OrderTriggerRender {
     public void CalculateNetAmountOrder(List<Order> newOrders) {
-        /* This is the before trigger method.
+        /* This is the before update trigger method.
         net amount is calculated with : (total mount - shipmentCost)
         the method takes a Trigger.new as parameter, which corresponds 
         to a list of Order, "newOrders". */
@@ -14,11 +14,12 @@ public class OrderTriggerRender {
             }
         }}
     public void CalculateTurnoverAccounts(List<Order> newOrders) {
-        //create new set of IDs, then query for accounts-turnover and orders-netAmount 
-        //with new set of ids
+        /* This is the after update trigger method. This method takes a
+        Trigger.new as parameter, which correspond to a list of Order, "newOrders".
+        Create new set of IDs */
         set<Id> setAccountIds = new set<Id>();
         /* for each orders in the list of triggered orders, add the new set of Ids to AccountID
-        for each order of the triggered orders list, if relative account id is not null, 
+        to each order of the triggered orders list, if relative account id is not null, 
         add this id to the list of account ids */
         for(Order o : newOrders) {
             if (o.AccountId != null) {
@@ -32,7 +33,8 @@ public class OrderTriggerRender {
         //for each account in the queried list (create decimal variable)
         for(Account a : accountListToUpdate) {
             Decimal turnover = 0;
-            //for each order in each account of the list add net amount to the variable turnover.
+            //for each order in each account of the list, add net amount to the variable turnover.
+            //The net amount is added to the turnover 
             for(Order o : a.Orders) {
                 turnover += o.NetAmount__c;
             }
