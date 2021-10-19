@@ -56,7 +56,7 @@ public class DataFactory {
         for (Integer oi = 0; oi < testOrderz.size(); oi++) {
         //variable testOrds corresponds to the testOrders list indexed with this for loop
             Order testOrds = testOrderz[oi];
-            /* This second for loop increments: starting with number of tests by increments;
+            /* This second for loop increments: starting with number of order items by increments;
             as long as the index doesn't reach the number of accounts times the orders per account,
             then increment.*/
             for(Integer ori = 0; ori < ItemQuantity; ori++ ) {
@@ -64,9 +64,7 @@ public class DataFactory {
                 testOrderItem.add(new OrderItem(OrderID =testOrds.Id, Product2Id = testProduct.Id, PricebookEntryId = testPriceBookEntry.Id,UnitPrice = testPriceBookEntry.UnitPrice, Quantity = 1));}}
                 //insert the list of order items
         insert testOrderItem;
-        update testOrderz;
-        update testAccounts;
-        //update accounts, orders and items.
+        //update items.
     }
     /* This test method creates an user with standard permission, 
     for testing purposes. */

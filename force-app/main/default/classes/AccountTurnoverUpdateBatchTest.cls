@@ -13,22 +13,24 @@ public with sharing class AccountTurnoverUpdateBatchTest {
         - The Shipment Cost for each item */
         //GIVEN : create date
         Integer numOfAccount = 10;
-        Integer numOfOrders = 208;
-        Integer numOfOrderItems = 10;
+        Integer numOfOrders = 100;
+        Integer numOfOrderItems = 1;
         Integer UnitPrices = 6500;
         Integer ShipCosts = 500;
-        Decimal expectedTurnover = Decimal.valueOf((numOfAccount * numOfOrders * numOfOrderItems * UnitPrices) - (numOfOrders * ShipCosts));
+        Decimal expectedTurnover = Decimal.valueOf((numOfOrders * numOfOrderItems * UnitPrices) - (numOfOrders * ShipCosts));
         DataFactory.createOrders(numOfAccount, numOfOrders, numOfOrderItems, UnitPrices, ShipCosts);
         List<Account> UpdateAccounts = new List<Account>();
         List<Account> AccountsUpdated = new List<Account>();
+        List<Order> OrdersToUpdate = new List<Order>();
         UpdateAccounts = [SELECT Id, Chiffre_d_affaire__c, (SELECT Id, TotalAmount FROM Orders WHERE Status='Draft') FROM Account];
-        update UpdateAccounts;
         //WHEN : execute test
         Test.startTest();
         for(Account acc : UpdateAccounts) {
             for(Order ord : acc.Orders) {
                 ord.Status = 'Ordered'; 
+                OrdersToUpdate.add(ord);
             }}
+        update OrdersToUpdate;
         AccountTurnoverUpdateBatch atub = new AccountTurnoverUpdateBatch();
         Id batchId = Database.executeBatch(atub);
         Test.stopTest();
@@ -38,7 +40,7 @@ public with sharing class AccountTurnoverUpdateBatchTest {
             System.assertEquals(numOfAccount, AccountsUpdated.size(), 'ERROR : Not all Accounts were updated.');
         }
         for(Account acc : AccountsUpdated) {
-            System.assertEquals(expectedTurnover, acc.Chiffre_d_affaire__c, 'Error : incorrect turnover value'); 
+            System.assertEquals(expectedTurnover, acc.Chiffre_d_affaire__c, 'Error : incorrect turnover value. Expected: '+ expectedTurnover + 'CA field: ' + acc.Chiffre_d_affaire__c); 
         }
     }
 }
