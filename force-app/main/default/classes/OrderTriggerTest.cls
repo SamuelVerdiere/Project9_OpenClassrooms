@@ -205,7 +205,7 @@ public with sharing class OrderTriggerTest {
         DataFactory.createOrders(5, 7, 2, 1000, 0);
         List<AggregateResult> SumOfResults;
         List<AggregateResult> Netamounts;
-        //List<Order> UpdateOrders = new List<Order>();
+        List<Order> UpdateOrders = new List<Order>();
         List<Account> UpdateAccounts = new List<Account>();
         UpdateAccounts = [SELECT Id, Chiffre_d_affaire__c, (SELECT Id, TotalAmount FROM Orders WHERE Status='Draft') FROM Account];
         //WHEN : execute test
@@ -219,8 +219,9 @@ public with sharing class OrderTriggerTest {
         for(Account acc: UpdateAccounts) {
             for(Order ord : acc.Orders) {
                 ord.ShipmentCost__c = 250;
+                UpdateOrders.add(ord);
             }}
-        update UpdateAccounts;
+        update UpdateOrders;
         SumOfResults = [SELECT SUM(Chiffre_d_affaire__c) turnover FROM Account];
         Netamounts = [SELECT SUM(TotalAmount) totalamt FROM Order];
         Test.stopTest();
